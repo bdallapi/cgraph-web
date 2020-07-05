@@ -1,0 +1,21 @@
+{
+  "name": "cgraph",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode development --config webpack.config.js"
+  },
+  "keywords": [],
+  "author": "Bastien Dalla Piazza",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "pixi.js": "^5.3.0"
+  }
+}
