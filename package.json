@@ -5,12 +5,17 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode development --config webpack.config.js"
+    "build-dev": "webpack --mode development --config webpack.dev.config.js",
+    "build-prod": "webpack --mode production --config webpack.prod.config.js"
   },
   "keywords": [],
   "author": "Bastien Dalla Piazza",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "babel-loader": "^8.1.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12"
   },
