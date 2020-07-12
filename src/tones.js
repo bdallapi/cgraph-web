@@ -12,15 +12,18 @@ const tones = Object.freeze(
         A: {val: 9, name: "A"},
         Bf:{val: 10, name: "Bf"},
         B: {val: 11, name: "B"},
-        Tone: function(toneEnum, octave)
-        {
-            return {
-                tone: toneEnum,
-                octave: octave,
-                str: function()
-                {
-                    return this.tone.name + '_' + this.octave;
-                }
+        Tone: {
+            create: function(toneEnum, octave)
+            {
+                var t = Object.create(this);
+                t.tone = toneEnum;
+                t.octave = octave;
+                return t;
+            },
+            
+            str: function()
+            {
+                return this.tone.name + '_' + this.octave;
             }
         }
     });
