@@ -1,8 +1,10 @@
 import * as PIXI from 'pixi.js';
 
+var tonesPlaneDiv = document.getElementById("tonesPlane");
+
 const app = new PIXI.Application({
-    width: 256,
-    height: 256
+    height: tonesPlaneDiv.offsetHeight,
+    width: tonesPlaneDiv.offsetWidth
 });
 
-document.body.appendChild(app.view);
+document.getElementById("tonesPlane").appendChild(app.view);

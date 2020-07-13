@@ -11,8 +11,14 @@ module.exports = {
     devtool: 'inline-source-map',
     plugins: [
         new CopyWebpackPlugin({
-            patterns: [
-                { from: 'src/assets', to: 'assets'}
+            patterns: [{
+                    from: 'src/assets',
+                    to: 'assets'
+                },
+                {
+                    from: 'src/style.css',
+                    to: '.'
+                }
             ]
         }),
         new HtmlWebpackPlugin({

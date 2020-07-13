@@ -1,0 +1,40 @@
+#tonesPlane {
+    position: relative;
+    border: 1px black solid;
+    flex: 3;
+}
+
+#scorePlane {
+    position: relative;
+    border: 1px black solid;
+    flex: 1;
+}
+
+#main {
+    position: relative;
+    display: flex;
+    height: 100%;
+    flex-grow: 1;
+}
+
+head {
+    height: 40px;
+    width: 100%;
+}
+
+footer {
+    height: 40px;
+    width: 100%;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}

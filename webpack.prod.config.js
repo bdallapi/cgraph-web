@@ -10,8 +10,8 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'main.js'
     },
-    module : {
-        rules:[{
+    module: {
+        rules: [{
             test: /\.(js)$/,
             exclude: /node_modules/,
             use: {
@@ -30,8 +30,14 @@ module.exports = {
     },
     plugins: [
         new CopyWebpackPlugin({
-            patterns: [
-                { from: 'src/assets', to: 'assets'}
+            patterns: [{
+                    from: 'src/assets',
+                    to: 'assets'
+                },
+                {
+                    from: 'src/style.css',
+                    to: '.'
+                }
             ]
         }),
         new HtmlWebpackPlugin({
