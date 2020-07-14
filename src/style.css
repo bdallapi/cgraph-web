@@ -1,11 +1,13 @@
 #tonesPlane {
     position: relative;
+    overflow: hidden;
     border: 1px black solid;
     flex: 3;
 }
 
 #scorePlane {
     position: relative;
+    overflow: hidden;
     border: 1px black solid;
     flex: 1;
 }
