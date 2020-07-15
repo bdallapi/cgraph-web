@@ -1,51 +1,123 @@
 const tones = Object.freeze({
+    Cf: {
+        val: 11,
+        name: "Cf",
+        main: "C",
+        alt: "f"
+    },
     C: {
         val: 0,
-        name: "C"
+        name: "C",
+        main: "C",
+        alt: ""
     },
-    D: {
-        val: 2,
-        name: "D"
+    Cs: {
+        val: 1,
+        name: "Cs",
+        main: "C",
+        alt: "s"
     },
     Df: {
         val: 1,
-        name: "Df"
+        name: "Df",
+        main: "D",
+        alt: "f"
+    },
+    D: {
+        val: 2,
+        name: "D",
+        main: "D",
+        alt: ""
+    },
+    Ds: {
+        val: 3,
+        name: "Ds",
+        main: "D",
+        alt: "s"
     },
     Ef: {
         val: 3,
-        name: "Ef"
+        name: "Ef",
+        main: "E",
+        alt: "f"
     },
     E: {
         val: 4,
-        name: "E"
+        name: "E",
+        main: "E",
+        alt: ""
+    },
+    Es: {
+        val: 5,
+        name: "Es",
+        main: "E",
+        alt: "s"
+    },
+    Ff: {
+        val: 4,
+        name: "Ff",
+        main: "F",
+        alt: "f"
     },
     F: {
         val: 5,
-        name: "F"
+        name: "F",
+        main: "F",
+        alt: ""
+    },
+    Fs: {
+        val: 6,
+        name: "Fs",
+        main: "F",
+        alt: "s"
     },
     Gf: {
         val: 6,
-        name: "Gf"
+        name: "Gf",
+        main: "G",
+        alt: "f"
     },
     G: {
         val: 7,
-        name: "G"
+        name: "G",
+        main: "G",
+        alt: ""
+    },
+    Gs: {
+        val: 8,
+        name: "Gs",
+        main: "G",
+        alt: "s"
     },
     Af: {
         val: 8,
-        name: "Af"
+        name: "Af",
+        main: "A",
+        alt: "f"
     },
     A: {
         val: 9,
-        name: "A"
+        name: "A",
+        main: "A",
+        alt: ""
     },
     Bf: {
         val: 10,
-        name: "Bf"
+        name: "Bf",
+        main: "B",
+        alt: "f"
     },
     B: {
         val: 11,
-        name: "B"
+        name: "B",
+        main: "B",
+        alt: ""
+    },
+    Bs: {
+        val: 0,
+        name: "Bs",
+        main: "B",
+        alt: "s"
     },
     Tone: {
         create: function (toneEnum, octave) {
