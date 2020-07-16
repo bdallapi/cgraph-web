@@ -25,3 +25,4 @@ HexGrid.create = function () {
 };
 
 export default HexGrid;
+export default Grid;

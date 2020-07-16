@@ -1,5 +1,5 @@
-import HexGrid from '../src/HexGrid';
-import * as math from 'mathjs'
+import HexGrid from '../src/Grid';
+import * as math from 'mathjs';
 
 test('integer cell position transforms to itself', () => {
     let grid = HexGrid.create();

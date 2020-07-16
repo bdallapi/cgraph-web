@@ -1,3 +1,7 @@
+import {
+    AssignmentNodeDependencies
+} from "mathjs";
+
 const tones = Object.freeze({
     Cf: {
         val: 11,
@@ -118,6 +122,34 @@ const tones = Object.freeze({
         name: "Bs",
         main: "B",
         alt: "s"
+    },
+    sharpSelection: {
+        0: C,
+        1: Cs,
+        2: D,
+        3: Ds,
+        4: E,
+        5: F,
+        6: Fs,
+        7: G,
+        8: Gs,
+        9: A,
+        10: As,
+        11: B
+    },
+    flatSelection: {
+        0: C,
+        1: Df,
+        2: D,
+        3: Ef,
+        4: E,
+        5: F,
+        6: Gf,
+        7: G,
+        8: Af,
+        9: A,
+        10: Bf,
+        11: B
     },
     Tone: {
         create: function (toneEnum, octave) {

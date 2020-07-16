@@ -1,7 +1,8 @@
 import * as PIXI from 'pixi.js';
 import tones from './tones';
+import TonesPlane from './TonesPlane';
 
-const app = new PIXI.Application({
+var app = new PIXI.Application({
     autoResize: true,
     resolution: devicePixelRatio
 });
@@ -10,8 +11,8 @@ document.querySelector("#tonesPlane").appendChild(app.view);
 
 PIXI.Loader.shared.add("assets/tones.png").load(setup);
 
-function toneSprite(toneEnum) {
-    let main2Row = {
+function toneSpriteProvider(toneEnum) {
+    const main2Row = {
         "C": 0,
         "D": 1,
         "E": 2,
@@ -20,7 +21,7 @@ function toneSprite(toneEnum) {
         "A": 5,
         "B": 6
     }
-    let alt2Col = {
+    const alt2Col = {
         "f": 0,
         "": 1,
         "s": 2
@@ -33,9 +34,9 @@ function toneSprite(toneEnum) {
 }
 
 function setup() {
-    let toneC = toneSprite(tones.C);
-    toneC.position.set(0, 0);
-    app.stage.addChild(toneC);
+    let plane = TonesPlane.create(tones.sharpSelection, app.screen.height / app.screen.width, toneSpriteProvider);
+    plane.container.position.set(app.screen.width / 2, app.screen.height / 2);
+    app.stage.addChild(plane.container);
     app.renderer.render(app.stage);
 }
 
@@ -47,11 +48,6 @@ function resize() {
 
     // Resize the renderer
     app.renderer.resize(parent.clientWidth, parent.clientHeight);
-
-    // You can use the 'screen' property as the renderer visible
-    // area, this is more useful than view.width/height because
-    // it handles resolution
-    //rect.position.set(app.screen.width, app.screen.height);
 }
 
 resize();
