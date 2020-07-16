@@ -1,6 +1,11 @@
 import * as PIXI from 'pixi.js';
-import tones from './tones';
-import TonesPlane from './TonesPlane';
+import {
+    tones,
+    sharpSelection
+} from './tones';
+import {
+    TonesPlane
+} from './TonesPlane';
 
 var app = new PIXI.Application({
     autoResize: true,
@@ -34,7 +39,7 @@ function toneSpriteProvider(toneEnum) {
 }
 
 function setup() {
-    let plane = TonesPlane.create(tones.sharpSelection, app.screen.height / app.screen.width, toneSpriteProvider);
+    let plane = TonesPlane.create(sharpSelection, app.screen.height / app.screen.width, toneSpriteProvider);
     plane.container.position.set(app.screen.width / 2, app.screen.height / 2);
     app.stage.addChild(plane.container);
     app.renderer.render(app.stage);

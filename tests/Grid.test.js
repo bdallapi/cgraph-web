@@ -1,4 +1,6 @@
-import HexGrid from '../src/Grid';
+import {
+    HexGrid
+} from '../src/Grid';
 import * as math from 'mathjs';
 
 test('integer cell position transforms to itself', () => {

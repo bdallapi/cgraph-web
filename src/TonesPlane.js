@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
-import tones from './tones';
-import Grid from './Grid';
+import {
+    Grid
+} from './Grid';
 import * as math from 'mathjs';
 
 const TonesPlane = {
@@ -12,41 +13,43 @@ const TonesPlane = {
     unitCell: {
         size1: 3,
         size2: 4,
-        [0, 0]: 0,
-        [1, 0]: 4,
-        [2, 0]: 8,
-        [0, 1]: 9,
-        [1, 1]: 1,
-        [2, 1]: 5,
-        [0, 2]: 6,
-        [1, 2]: 10,
-        [2, 2]: 2,
-        [0, 3]: 3,
-        [1, 3]: 7,
-        [2, 3]: 11
+        toneValue: function (i, j) {
+            if (i == 0 && j == 0) return 0;
+            if (i == 1 && j == 0) return 4;
+            if (i == 2 && j == 0) return 8;
+            if (i == 0 && j == 1) return 9;
+            if (i == 1 && j == 1) return 1;
+            if (i == 2 && j == 1) return 5;
+            if (i == 0 && j == 2) return 6;
+            if (i == 1 && j == 2) return 10;
+            if (i == 2 && j == 2) return 2;
+            if (i == 0 && j == 3) return 3;
+            if (i == 1 && j == 3) return 7;
+            if (i == 2 && j == 3) return 11;
+        }
     },
 
     worldToTransformedFrame: function (worldFrame) {
         const tl = math.floor(math.multiply(this.grid.inv, math.matrix([
-            [worlfFrame.x],
+            [worldFrame.x],
             [worldFrame.y]
         ])));
         const tr = math.floor(math.multiply(this.grid.inv, math.matrix([
-            [worlfFrame.x + worldFrame.width],
+            [worldFrame.x + worldFrame.width],
             [worldFrame.y]
         ])));
         const bl = math.floor(math.multiply(this.grid.inv, math.matrix([
-            [worlfFrame.x],
+            [worldFrame.x],
             [worldFrame.y + worldFrame.height]
         ])));
         const br = math.floor(math.multiply(this.grid.inv, math.matrix([
-            [worlfFrame.x + worldFrame.width],
+            [worldFrame.x + worldFrame.width],
             [worldFrame.y + worldFrame.height]
         ])));
-        const min0 = math.min(tl.get(0), tr.get(0), bl.get(0), br.get(0));
-        const max0 = math.max(tl.get(0), tr.get(0), bl.get(0), br.get(0));
-        const min1 = math.min(tl.get(1), tr.get(1), bl.get(1), br.get(1));
-        const max1 = math.max(tl.get(1), tr.get(1), bl.get(1), br.get(1));
+        const min0 = math.min(tl.get([0, 0]), tr.get([0, 0]), bl.get([0, 0]), br.get([0, 0]));
+        const max0 = math.max(tl.get([0, 0]), tr.get([0, 0]), bl.get([0, 0]), br.get([0, 0]));
+        const min1 = math.min(tl.get([1, 0]), tr.get([1, 0]), bl.get([1, 0]), br.get([1, 0]));
+        const max1 = math.max(tl.get([1, 0]), tr.get([1, 0]), bl.get([1, 0]), br.get([1, 0]));
         return new PIXI.Rectangle(min0, min1, max0 - min0 + 1, max1 - min1 + 1);
     },
 
@@ -58,7 +61,7 @@ const TonesPlane = {
         plane.selection = selection;
         plane.aspect = aspect;
 
-        plane.localFrame = PIXI.Rectangle(
+        plane.localFrame = new PIXI.Rectangle(
             -this.localWidth / 2, aspect * this.localWidth / 2,
             this.localWidth, aspect * this.localWidth);
 
@@ -66,10 +69,16 @@ const TonesPlane = {
         plane.spriteProvider = spriteProvider;
 
         plane.populate = function () {
-            const tf = this.worldToTransformedFrame(plane.localFrame);
+            const tf = plane.worldToTransformedFrame(plane.localFrame);
             for (let i = tf.x; i < tf.x + tf.width; ++i) {
                 for (let j = tf.y; j < tf.y + tf.height; ++j) {
-                    let sprite = spriteProvider(selection[this.unitCell[[i % this.unitCell.size1, j % this.unitCell.size2]]]);
+                    let uci = i % this.unitCell.size1;
+                    let ucj = j % this.unitCell.size2;
+                    if (uci < 0) uci += this.unitCell.size1;
+                    if (ucj < 0) ucj += this.unitCell.size2;
+                    const val = plane.unitCell.toneValue(uci, ucj);
+                    const toneEnum = selection[val];
+                    let sprite = spriteProvider(toneEnum);
                     sprite.position.set(this.grid.cellToWorld(math.matrix([
                         [i],
                         [j]
@@ -85,4 +94,6 @@ const TonesPlane = {
     }
 }
 
-export default TonesPlane;
+export {
+    TonesPlane
+};
