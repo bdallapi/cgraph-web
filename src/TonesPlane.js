@@ -10,6 +10,10 @@ const TonesPlane = {
         [0.5 * math.sqrt(3), 0.5 * math.sqrt(3)]
     ])),
 
+    localWidth: 7.5,
+    localScale: 1.0 / 192,
+    asset: "assets/tones.png",
+
     unitCell: {
         size1: 3,
         size2: 4,
@@ -50,23 +54,46 @@ const TonesPlane = {
         const max0 = math.max(tl.get([0, 0]), tr.get([0, 0]), bl.get([0, 0]), br.get([0, 0]));
         const min1 = math.min(tl.get([1, 0]), tr.get([1, 0]), bl.get([1, 0]), br.get([1, 0]));
         const max1 = math.max(tl.get([1, 0]), tr.get([1, 0]), bl.get([1, 0]), br.get([1, 0]));
-        return new PIXI.Rectangle(min0 - 2, min1 - 2, max0 - min0 + 3, max1 - min1 + 3);
+        return new PIXI.Rectangle(min0, min1, max0 - min0 + 1, max1 - min1 + 1);
     },
 
-    localWidth: 7.5,
-    localScale: 1.0 / 192,
-
-    create: function (selection, aspect, spriteProvider) {
+    create: function (selection, aspect, resources) {
         var plane = Object.create(this);
         plane.selection = selection;
         plane.aspect = aspect;
 
         plane.localFrame = new PIXI.Rectangle(
-            -this.localWidth / 2, aspect * this.localWidth / 2,
+            -this.localWidth / 2, -aspect * this.localWidth / 2,
             this.localWidth, aspect * this.localWidth);
 
         plane.container = new PIXI.Container();
-        plane.spriteProvider = spriteProvider;
+
+        plane.spriteProvider = function (toneEnum, isActive) {
+            const main2Row = {
+                "C": 0,
+                "D": 1,
+                "E": 2,
+                "F": 3,
+                "G": 4,
+                "A": 5,
+                "B": 6
+            }
+            let pixSize = 64;
+            const alt2Col = function (alt, act) {
+                switch (alt) {
+                    case "f":
+                        return act;
+                    case "":
+                        return 2 + act;
+                    case "s":
+                        return 4 + act;
+                }
+            }
+            let texture = resources["assets/tones.png"].texture.clone();
+            let rect = new PIXI.Rectangle(alt2Col(toneEnum.alt, isActive) * pixSize, main2Row[toneEnum.main] * pixSize, pixSize, pixSize);
+            texture.frame = rect;
+            return new PIXI.Sprite(texture);
+        }
 
         plane.populate = function () {
             const tf = plane.worldToTransformedFrame(plane.localFrame);
@@ -78,7 +105,7 @@ const TonesPlane = {
                     if (ucj < 0) ucj += this.unitCell.size2;
                     const val = plane.unitCell.toneValue(uci, ucj);
                     const toneEnum = selection[val];
-                    let sprite = spriteProvider(toneEnum, false);
+                    let sprite = plane.spriteProvider(toneEnum, false);
                     let pos = this.grid.cellToWorld(math.matrix([
                         [i],
                         [j]
