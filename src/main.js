@@ -16,7 +16,7 @@ document.querySelector("#tonesPlane").appendChild(app.view);
 
 PIXI.Loader.shared.add("assets/tones.png").load(setup);
 
-function toneSpriteProvider(toneEnum) {
+function toneSpriteProvider(toneEnum, active, resources) {
     const main2Row = {
         "C": 0,
         "D": 1,
@@ -26,21 +26,31 @@ function toneSpriteProvider(toneEnum) {
         "A": 5,
         "B": 6
     }
-    const alt2Col = {
-        "f": 0,
-        "": 1,
-        "s": 2
-    }
     let pixSize = 64;
-    let texture = PIXI.utils.TextureCache["assets/tones.png"];
-    let rect = new PIXI.Rectangle(alt2Col[toneEnum.alt] * pixSize, main2Row[toneEnum.main] * pixSize, pixSize, pixSize);
+    const alt2Col = function (alt, act) {
+        switch (alt) {
+            case "f":
+                return act;
+            case "":
+                return 2 + act;
+            case "s":
+                return 4 + act;
+        }
+    }
+    let texture = resources["assets/tones.png"].texture.clone();
+    let rect = new PIXI.Rectangle(alt2Col(toneEnum.alt, active) * pixSize, main2Row[toneEnum.main] * pixSize, pixSize, pixSize);
     texture.frame = rect;
     return new PIXI.Sprite(texture);
 }
 
-function setup() {
-    let plane = TonesPlane.create(sharpSelection, app.screen.height / app.screen.width, toneSpriteProvider);
+function setup(loader, resources) {
+    let provider = function (toneEnum, isActive) {
+        return toneSpriteProvider(toneEnum, isActive, resources);
+    }
+    let plane = TonesPlane.create(sharpSelection, app.screen.height / app.screen.width, provider);
     plane.container.position.set(app.screen.width / 2, app.screen.height / 2);
+    let scale = app.screen.width / plane.localWidth;
+    plane.container.scale.set(scale, scale);
     app.stage.addChild(plane.container);
     app.renderer.render(app.stage);
 }

@@ -50,7 +50,7 @@ const TonesPlane = {
         const max0 = math.max(tl.get([0, 0]), tr.get([0, 0]), bl.get([0, 0]), br.get([0, 0]));
         const min1 = math.min(tl.get([1, 0]), tr.get([1, 0]), bl.get([1, 0]), br.get([1, 0]));
         const max1 = math.max(tl.get([1, 0]), tr.get([1, 0]), bl.get([1, 0]), br.get([1, 0]));
-        return new PIXI.Rectangle(min0, min1, max0 - min0 + 1, max1 - min1 + 1);
+        return new PIXI.Rectangle(min0 - 2, min1 - 2, max0 - min0 + 3, max1 - min1 + 3);
     },
 
     localWidth: 7.5,
@@ -78,11 +78,12 @@ const TonesPlane = {
                     if (ucj < 0) ucj += this.unitCell.size2;
                     const val = plane.unitCell.toneValue(uci, ucj);
                     const toneEnum = selection[val];
-                    let sprite = spriteProvider(toneEnum);
-                    sprite.position.set(this.grid.cellToWorld(math.matrix([
+                    let sprite = spriteProvider(toneEnum, false);
+                    let pos = this.grid.cellToWorld(math.matrix([
                         [i],
                         [j]
-                    ])));
+                    ]));
+                    sprite.position.set(pos.get([0, 0]), pos.get([1, 0]));
                     sprite.scale.set(this.localScale, this.localScale);
                     plane.container.addChild(sprite);
                 }
