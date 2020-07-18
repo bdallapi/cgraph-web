@@ -2,9 +2,8 @@ import * as PIXI from 'pixi.js';
 import {
     sharpSelection
 } from './tones';
-import {
-    TonesPlane
-} from './TonesPlane';
+import TonesPlane from './TonesPlane';
+import ToneSprite from './ToneSprite';
 
 var app = new PIXI.Application({
     autoResize: true,
@@ -13,7 +12,7 @@ var app = new PIXI.Application({
 
 document.querySelector("#tonesPlane").appendChild(app.view);
 
-PIXI.Loader.shared.add(TonesPlane.asset).load(setup);
+PIXI.Loader.shared.add(ToneSprite.asset).load(setup);
 
 function setup(loader, resources) {
     let plane = TonesPlane.create(sharpSelection, app.screen.height / app.screen.width, resources);

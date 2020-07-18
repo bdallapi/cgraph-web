@@ -3,6 +3,7 @@ import {
     Grid
 } from './Grid';
 import * as math from 'mathjs';
+import ToneSprite from './ToneSprite';
 
 const TonesPlane = {
     grid: Grid.create(math.matrix([
@@ -12,7 +13,6 @@ const TonesPlane = {
 
     localWidth: 7.5,
     localScale: 1.0 / 192,
-    asset: "assets/tones.png",
 
     unitCell: {
         size1: 3,
@@ -68,33 +68,6 @@ const TonesPlane = {
 
         plane.container = new PIXI.Container();
 
-        plane.spriteProvider = function (toneEnum, isActive) {
-            const main2Row = {
-                "C": 0,
-                "D": 1,
-                "E": 2,
-                "F": 3,
-                "G": 4,
-                "A": 5,
-                "B": 6
-            }
-            let pixSize = 64;
-            const alt2Col = function (alt, act) {
-                switch (alt) {
-                    case "f":
-                        return act;
-                    case "":
-                        return 2 + act;
-                    case "s":
-                        return 4 + act;
-                }
-            }
-            let texture = resources["assets/tones.png"].texture.clone();
-            let rect = new PIXI.Rectangle(alt2Col(toneEnum.alt, isActive) * pixSize, main2Row[toneEnum.main] * pixSize, pixSize, pixSize);
-            texture.frame = rect;
-            return new PIXI.Sprite(texture);
-        }
-
         plane.populate = function () {
             const tf = plane.worldToTransformedFrame(plane.localFrame);
             for (let i = tf.x; i < tf.x + tf.width; ++i) {
@@ -105,7 +78,8 @@ const TonesPlane = {
                     if (ucj < 0) ucj += this.unitCell.size2;
                     const val = plane.unitCell.toneValue(uci, ucj);
                     const toneEnum = selection[val];
-                    let sprite = plane.spriteProvider(toneEnum, false);
+
+                    let sprite = ToneSprite.create(toneEnum, resources);
                     let pos = this.grid.cellToWorld(math.matrix([
                         [i],
                         [j]
@@ -122,6 +96,4 @@ const TonesPlane = {
     }
 }
 
-export {
-    TonesPlane
-};
+export default TonesPlane;
