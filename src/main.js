@@ -53,16 +53,19 @@ function setup(loader, resources) {
     plane.container.scale.set(scale, scale);
     app.stage.addChild(plane.container);
     app.renderer.render(app.stage);
+
+    window.addEventListener('resize', resize);
+
+    function resize() {
+        // Get the p
+        const parent = app.view.parentNode;
+
+        // Resize the renderer
+        app.renderer.resize(parent.clientWidth, parent.clientHeight);
+
+        let scale = app.screen.width / plane.localWidth;
+        plane.container.scale.set(scale, scale);
+    }
+
+    resize();
 }
-
-window.addEventListener('resize', resize);
-
-function resize() {
-    // Get the p
-    const parent = app.view.parentNode;
-
-    // Resize the renderer
-    app.renderer.resize(parent.clientWidth, parent.clientHeight);
-}
-
-resize();
