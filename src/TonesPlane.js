@@ -44,20 +44,112 @@ function TonesPlane(selection, screen, resources) {
 
     this.hovered = false;
 
+    this.pointerTriangle = [];
+
     this.on('mousemove', this.drawTriangle)
         .on('mouseover', function () {
             this.hovered = true;
         })
         .on('mouseout', function () {
             this.hovered = false;
+            this.pointerTriangle = [];
         });
 }
 
 TonesPlane.prototype = Object.create(PIXI.Container.prototype);
 
 TonesPlane.prototype.drawTriangle = function (ev) {
-    if (this.hovered)
-        console.log("mouse at (" + ev.data.global.x + ", " + ev.data.global.y + ")");
+    const trianglesEq = function (lhs, rhs) {
+        if (lhs.length != rhs.length)
+            return false;
+        for (let l of lhs) {
+            let found = false;
+            for (let r of rhs) {
+                if (l.get([0, 0]) == r.get([0, 0]) && l.get([1, 0]) == r.get([1, 0])) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                return false;
+        }
+        return true;
+    };
+    if (this.hovered) {
+        let local = this.toLocal(ev.data.global);
+        let cell = this.grid.worldToCell(math.matrix([
+            [local.x],
+            [local.y]
+        ]));
+        let cellCoord = this.grid.cellToWorld(cell);
+        let sextant = math.floor(math.atan2(local.y - cellCoord.get([1, 0]), local.x - cellCoord.get([0, 0])) / math.pi * 3);
+        let newTriangle;
+        switch (sextant) {
+            case 0:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [1],
+                    [-1]
+                ])), math.add(cell, math.matrix([
+                    [1],
+                    [0]
+                ]))];
+                break;
+            case 1:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [1],
+                    [0]
+                ])), math.add(cell, math.matrix([
+                    [0],
+                    [1]
+                ]))];
+                break;
+            case 2:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [0],
+                    [1]
+                ])), math.add(cell, math.matrix([
+                    [-1],
+                    [1]
+                ]))];
+                break;
+            case -1:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [1],
+                    [-1]
+                ])), math.add(cell, math.matrix([
+                    [0],
+                    [-1]
+                ]))];
+                break;
+            case -2:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [0],
+                    [-1]
+                ])), math.add(cell, math.matrix([
+                    [-1],
+                    [0]
+                ]))];
+                break;
+            case -3:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [-1],
+                    [0]
+                ])), math.add(cell, math.matrix([
+                    [-1],
+                    [1]
+                ]))];
+                break;
+        }
+        if (!trianglesEq(this.pointerTriangle, newTriangle)) {
+            this.pointerTriangle = newTriangle;
+            let str = "";
+            for (let item of this.pointerTriangle) {
+                str += item + ", ";
+            }
+            console.log(str);
+        }
+    }
 }
 
 TonesPlane.prototype.worldToTransformedFrame = function (worldFrame) {

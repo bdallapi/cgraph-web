@@ -34,6 +34,7 @@ function ToneSprite(toneEnum, resources) {
         .on('mouseout', function () {
             this.texture = this.passiveTex;
         });
+    this.pivot.set(pixSize / 2, pixSize / 2);
 }
 
 ToneSprite.prototype = Object.create(PIXI.Sprite.prototype);
