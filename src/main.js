@@ -15,7 +15,7 @@ document.querySelector("#tonesPlane").appendChild(app.view);
 PIXI.Loader.shared.add(ToneSprite.asset).load(setup);
 
 function setup(loader, resources) {
-    let plane = TonesPlane.create(sharpSelection, app.screen.height / app.screen.width, resources);
+    let plane = TonesPlane.create(sharpSelection, app.screen, resources);
     plane.container.position.set(app.screen.width / 2, app.screen.height / 2);
     let scale = app.screen.width / plane.localWidth;
     plane.container.scale.set(scale, scale);
@@ -29,9 +29,7 @@ function setup(loader, resources) {
 
         // Resize the renderer
         app.renderer.resize(parent.clientWidth, parent.clientHeight);
-
-        let scale = app.screen.width / plane.localWidth;
-        plane.container.scale.set(scale, scale);
+        plane.resize(app.screen);
     }
     window.addEventListener('resize', resize);
     resize();

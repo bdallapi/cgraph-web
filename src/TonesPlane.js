@@ -57,16 +57,28 @@ const TonesPlane = {
         return new PIXI.Rectangle(min0, min1, max0 - min0 + 1, max1 - min1 + 1);
     },
 
-    create: function (selection, aspect, resources) {
+    create: function (selection, screen, resources) {
         var plane = Object.create(this);
         plane.selection = selection;
-        plane.aspect = aspect;
 
-        plane.localFrame = new PIXI.Rectangle(
-            -this.localWidth / 2, -aspect * this.localWidth / 2,
-            this.localWidth, aspect * this.localWidth);
+        let hovered = false;
+
+        plane.drawTriangle = function (ev) {
+            if (hovered)
+                console.log("mouse at (" + ev.data.global.x + ", " + ev.data.global.y + ")");
+        }
 
         plane.container = new PIXI.Container();
+        plane.container.interactive = true;
+
+        plane.container
+            .on('mousemove', plane.drawTriangle)
+            .on('mouseover', function () {
+                hovered = true;
+            })
+            .on('mouseout', function () {
+                hovered = false;
+            });
 
         plane.populate = function () {
             const tf = plane.worldToTransformedFrame(plane.localFrame);
@@ -90,6 +102,23 @@ const TonesPlane = {
                 }
             }
         }
+
+        plane.resize = function (rect) {
+            let scale = rect.width / plane.localWidth;
+            plane.container.scale.set(scale, scale);
+
+            let screenTopLeftInLocal = plane.container.toLocal(new PIXI.Point(rect.x, rect.y));
+            let height = plane.container.scale.y * rect.height;
+            let width = plane.container.scale.x * rect.width;
+            plane.container.hitArea = new PIXI.Rectangle(screenTopLeftInLocal.x, screenTopLeftInLocal.y, width, height);
+
+            plane.aspect = rect.height / rect.width;
+            plane.localFrame = new PIXI.Rectangle(
+                -this.localWidth / 2, -plane.aspect * this.localWidth / 2,
+                this.localWidth, plane.aspect * this.localWidth);
+        }
+
+        plane.resize(screen);
         plane.populate();
 
         return plane;
