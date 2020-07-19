@@ -95,7 +95,7 @@ TonesPlane.prototype.populate = function () {
             const val = this.unitCell.toneValue(uci, ucj);
             const toneEnum = this.selection[val];
 
-            let sprite = ToneSprite.create(toneEnum, this.resources);
+            let sprite = new ToneSprite(toneEnum, this.resources);
             let pos = this.grid.cellToWorld(math.matrix([
                 [i],
                 [j]
