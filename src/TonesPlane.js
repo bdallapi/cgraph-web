@@ -223,6 +223,13 @@ TonesPlane.prototype.populate = function () {
             sprite.position.set(pos.get([0, 0]), pos.get([1, 0]));
             sprite.scale.set(this.localScale, this.localScale);
             this.addChild(sprite);
+            let plane = this;
+            sprite.on('mouseover', function () {
+                    plane.emit('mouseout');
+                })
+                .on('mouseout', function () {
+                    plane.emit('mouseover')
+                });
         }
     }
 };
