@@ -4,6 +4,9 @@ import {
 } from './Grid';
 import * as math from 'mathjs';
 import ToneSprite from './ToneSprite';
+import {
+    foreFrontColor
+} from './constants';
 
 function TonesPlane(selection, screen, resources) {
     PIXI.Container.call(this);
@@ -45,20 +48,26 @@ function TonesPlane(selection, screen, resources) {
     this.hovered = false;
 
     this.pointerTriangle = [];
+    this.triangleCursor = new PIXI.Graphics();
+    this.triangleCursor.zIndex = 0;
+    this.addChild(this.triangleCursor);
 
-    this.on('mousemove', this.drawTriangle)
+    this.sortChildren();
+
+    this.on('mousemove', this.onMouseMove)
         .on('mouseover', function () {
             this.hovered = true;
         })
         .on('mouseout', function () {
             this.hovered = false;
             this.pointerTriangle = [];
+            this.triangleCursor.clear();
         });
 }
 
 TonesPlane.prototype = Object.create(PIXI.Container.prototype);
 
-TonesPlane.prototype.drawTriangle = function (ev) {
+TonesPlane.prototype.onMouseMove = function (ev) {
     const trianglesEq = function (lhs, rhs) {
         if (lhs.length != rhs.length)
             return false;
@@ -140,6 +149,8 @@ TonesPlane.prototype.drawTriangle = function (ev) {
                     [1]
                 ]))];
                 break;
+            default:
+                throw new Error("unexpected sextant value: " + sextant);
         }
         if (!trianglesEq(this.pointerTriangle, newTriangle)) {
             this.pointerTriangle = newTriangle;
@@ -148,8 +159,24 @@ TonesPlane.prototype.drawTriangle = function (ev) {
                 str += item + ", ";
             }
             console.log(str);
+            this.drawTriangle(this.pointerTriangle);
         }
     }
+}
+
+TonesPlane.prototype.drawTriangle = function (summits) {
+    const s0 = this.grid.cellToWorld(summits[0]);
+    const s1 = this.grid.cellToWorld(summits[1]);
+    const s2 = this.grid.cellToWorld(summits[2]);
+    this.triangleCursor.clear()
+        .lineStyle(1 / 128, foreFrontColor, 1)
+        .beginFill(0xFFFFFF, 0)
+        .moveTo(s0.get([0, 0]), s0.get([1, 0]))
+        .lineTo(s1.get([0, 0]), s1.get([1, 0]))
+        .lineTo(s2.get([0, 0]), s2.get([1, 0]))
+        .lineTo(s0.get([0, 0]), s0.get([1, 0]))
+        .closePath()
+        .endFill();
 }
 
 TonesPlane.prototype.worldToTransformedFrame = function (worldFrame) {
@@ -188,6 +215,7 @@ TonesPlane.prototype.populate = function () {
             const toneEnum = this.selection[val];
 
             let sprite = new ToneSprite(toneEnum, this.resources);
+            sprite.zIndex = 1;
             let pos = this.grid.cellToWorld(math.matrix([
                 [i],
                 [j]

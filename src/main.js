@@ -7,7 +7,8 @@ import ToneSprite from './ToneSprite';
 
 var app = new PIXI.Application({
     autoResize: true,
-    resolution: devicePixelRatio
+    resolution: devicePixelRatio,
+    antialias: true
 });
 
 document.querySelector("#tonesPlane").appendChild(app.view);
