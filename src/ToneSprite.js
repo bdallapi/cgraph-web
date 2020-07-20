@@ -28,16 +28,26 @@ function ToneSprite(toneEnum, resources) {
 
     PIXI.Sprite.call(this, this.passiveTex);
     this.interactive = true;
+    this.hovered = false;
     this.on('mouseover', function () {
-            this.texture = this.activeTex;
+            this.hovered = true;
+            this.setActive(true);
         })
         .on('mouseout', function () {
-            this.texture = this.passiveTex;
+            this.hovered = false;
+            this.setActive(false);
         });
     this.pivot.set(pixSize / 2, pixSize / 2);
 }
 
 ToneSprite.prototype = Object.create(PIXI.Sprite.prototype);
+
+ToneSprite.prototype.setActive = function (active) {
+    if (active)
+        this.texture = this.activeTex;
+    else if (!this.hovered)
+        this.texture = this.passiveTex;
+};
 
 ToneSprite.asset = "assets/tones.png";
 

@@ -60,12 +60,23 @@ function TonesPlane(selection, screen, resources) {
         })
         .on('mouseout', function () {
             this.hovered = false;
+            for (let s of this.pointerTriangle) {
+                this.setSpriteActive(s.get([0, 0]), s.get([1, 0]), false);
+            }
             this.pointerTriangle = [];
             this.triangleCursor.clear();
         });
 }
 
 TonesPlane.prototype = Object.create(PIXI.Container.prototype);
+
+TonesPlane.prototype.setSpriteActive = function (i, j, active) {
+    if (i in this.toneSprites) {
+        if (j in this.toneSprites[i]) {
+            this.toneSprites[i][j].setActive(active);
+        }
+    }
+}
 
 TonesPlane.prototype.onMouseMove = function (ev) {
     const trianglesEq = function (lhs, rhs) {
@@ -153,12 +164,13 @@ TonesPlane.prototype.onMouseMove = function (ev) {
                 throw new Error("unexpected sextant value: " + sextant);
         }
         if (!trianglesEq(this.pointerTriangle, newTriangle)) {
-            this.pointerTriangle = newTriangle;
-            let str = "";
-            for (let item of this.pointerTriangle) {
-                str += item + ", ";
+            for (let s of this.pointerTriangle) {
+                this.setSpriteActive(s.get([0, 0]), s.get([1, 0]), false);
             }
-            console.log(str);
+            this.pointerTriangle = newTriangle;
+            for (let s of this.pointerTriangle) {
+                this.setSpriteActive(s.get([0, 0]), s.get([1, 0]), true);
+            }
             this.drawTriangle(this.pointerTriangle);
         }
     }
@@ -205,6 +217,7 @@ TonesPlane.prototype.worldToTransformedFrame = function (worldFrame) {
 
 TonesPlane.prototype.populate = function () {
     const tf = this.worldToTransformedFrame(this.localFrame);
+    this.toneSprites = {};
     for (let i = tf.x; i < tf.x + tf.width; ++i) {
         for (let j = tf.y; j < tf.y + tf.height; ++j) {
             let uci = i % this.unitCell.size1;
@@ -223,6 +236,9 @@ TonesPlane.prototype.populate = function () {
             sprite.position.set(pos.get([0, 0]), pos.get([1, 0]));
             sprite.scale.set(this.localScale, this.localScale);
             this.addChild(sprite);
+            if (!(i in this.toneSprites))
+                this.toneSprites[i] = {};
+            this.toneSprites[i][j] = sprite;
             let plane = this;
             sprite.on('mouseover', function () {
                     plane.emit('mouseout');
