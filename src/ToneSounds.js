@@ -16,8 +16,8 @@ function ToneSounds(source, setup) {
     let time = 8000;
     for (let octave = 3; octave < 6; ++octave) {
         for (let v = 0; v < 12; ++v) {
-            conf.sprite[tones.Tone.create(sharpSelection[v], octave).str()] = [((octave - 3) * 12 + v) * time, ((octave - 3) * 12 + v + 1) * time];
-            conf.sprite[tones.Tone.create(flatSelection[v], octave).str()] = [((octave - 3) * 12 + v) * time, ((octave - 3) * 12 + v + 1) * time];
+            conf.sprite[tones.Tone.create(sharpSelection[v], octave).str()] = [((octave - 3) * 12 + v) * time, time];
+            conf.sprite[tones.Tone.create(flatSelection[v], octave).str()] = [((octave - 3) * 12 + v) * time, time];
         }
     }
     this.howl = new Howl(conf);
