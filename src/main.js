@@ -1,15 +1,19 @@
 import * as PIXI from 'pixi.js';
 import {
-    sharpSelection
+    sharpSelection,
+    tones
 } from './tones';
 import TonesPlane from './TonesPlane';
 import ToneSprite from './ToneSprite';
+import ToneSounds from './ToneSounds';
 
 var app = new PIXI.Application({
     autoResize: true,
     resolution: devicePixelRatio,
     antialias: true
 });
+
+var toneSounds = new ToneSounds('assets/tones.webm', onSoundLoaded);
 
 document.querySelector("#tonesPlane").appendChild(app.view);
 
@@ -32,4 +36,11 @@ function setup(loader, resources) {
     }
     window.addEventListener('resize', resize);
     resize();
+}
+
+function onSoundLoaded() {
+    toneSounds.play(tones.Tone.create(tones.C, 3));
+    toneSounds.play(tones.Tone.create(tones.C, 4));
+    toneSounds.play(tones.Tone.create(tones.E, 4));
+    toneSounds.play(tones.Tone.create(tones.G, 4));
 }
