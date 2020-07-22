@@ -8,9 +8,9 @@ import {
     flatSelection
 } from './tones'
 
-function ToneSounds(source, setup) {
+function loadToneSounds() {
     let conf = {
-        src: source,
+        src: 'assets/tones.webm',
         sprite: {}
     };
     let time = 8000;
@@ -20,14 +20,9 @@ function ToneSounds(source, setup) {
             conf.sprite[tones.Tone.create(flatSelection[v], octave).str()] = [((octave - 3) * 12 + v) * time, time];
         }
     }
-    this.howl = new Howl(conf);
-    this.howl.once('load', setup);
+    return new Howl(conf);
 }
 
-ToneSounds.prototype.play = function (tone) {
-    return this.howl.play(tone.str());
-}
-
-ToneSounds.asset = 'assets/tones.webm';
-
-export default ToneSounds;
+export {
+    loadToneSounds
+};
