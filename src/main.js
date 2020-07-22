@@ -54,6 +54,14 @@ function setup(loader, resources) {
     window.addEventListener('resize', resize);
     resize();
     onSoundLoaded();
+
+    var played = [];
+    plane.on('tonestriggered', (triggeredTones) => {
+        for (let p of played) {
+            toneSounds.fade(1, 0, 50, p);
+        }
+        played = triggeredTones.map(t => toneSounds.play(t.str()));
+    })
 }
 
 function onSoundLoaded() {

@@ -7,6 +7,9 @@ import ToneSprite from './ToneSprite';
 import {
     foreFrontColor
 } from './constants';
+import {
+    tones
+} from './tones';
 
 function TonesPlane(selection, screen, resources) {
     PIXI.Container.call(this);
@@ -20,7 +23,11 @@ function TonesPlane(selection, screen, resources) {
     this.unitCell = {
         size1: 3,
         size2: 4,
-        toneValue: function (i, j) {
+        toneValue: function (ii, jj) {
+            let i = ii % 3;
+            if (i < 0) i += 3;
+            let j = jj % 4;
+            if (j < 0) j += 4;
             if (i == 0 && j == 0) return 0;
             if (i == 1 && j == 0) return 4;
             if (i == 2 && j == 0) return 8;
@@ -65,7 +72,8 @@ function TonesPlane(selection, screen, resources) {
             }
             this.pointerTriangle = [];
             this.triangleCursor.clear();
-        });
+        })
+        .on('mousedown', this.onMouseDown);
 }
 
 TonesPlane.prototype = Object.create(PIXI.Container.prototype);
@@ -173,6 +181,13 @@ TonesPlane.prototype.onMouseMove = function (ev) {
             }
             this.drawTriangle(this.pointerTriangle);
         }
+    }
+}
+
+TonesPlane.prototype.onMouseDown = function (ev) {
+    if (ev.data.button == 0) {
+        let triggeredTones = this.pointerTriangle.map(pt => tones.Tone.create(this.selection[this.unitCell.toneValue(pt.get([0, 0]), pt.get([1, 0]))], 4));
+        this.emit('tonestriggered', triggeredTones);
     }
 }
 
