@@ -11,7 +11,7 @@ import {
     tones
 } from './tones';
 
-function TonesPlane(selection, screen, resources) {
+function TonesPlane(selection, screen, resources, ticker) {
     PIXI.Container.call(this);
     this.interactive = true;
     this.grid = Grid.create(math.matrix([
@@ -58,6 +58,8 @@ function TonesPlane(selection, screen, resources) {
     this.triangleCursor = new PIXI.Graphics();
     this.triangleCursor.zIndex = 0;
     this.addChild(this.triangleCursor);
+
+    this.ticker = ticker;
 
     this.sortChildren();
 
@@ -179,31 +181,48 @@ TonesPlane.prototype.onMouseMove = function (ev) {
             for (let s of this.pointerTriangle) {
                 this.setSpriteActive(s.get([0, 0]), s.get([1, 0]), true);
             }
-            this.drawTriangle(this.pointerTriangle);
+            this.triangleCursor.clear().lineStyle(1 / 128, foreFrontColor, 1);
+            this.drawTriangle(this.pointerTriangle, this.triangleCursor);
         }
     }
 }
 
 TonesPlane.prototype.onMouseDown = function (ev) {
-    if (ev.data.button == 0) {
-        let triggeredTones = this.pointerTriangle.map(pt => tones.Tone.create(this.selection[this.unitCell.toneValue(pt.get([0, 0]), pt.get([1, 0]))], 4));
-        this.emit('tonestriggered', triggeredTones);
+    if (this.hovered) {
+        if (ev.data.button == 0) {
+            let triggeredTones = this.pointerTriangle.map(pt => tones.Tone.create(this.selection[this.unitCell.toneValue(pt.get([0, 0]), pt.get([1, 0]))], 4));
+            this.emit('tonestriggered', triggeredTones);
+            var fadingTriangle = new PIXI.Graphics();
+            var alpha = 1;
+            this.addChildAt(fadingTriangle, 0);
+            var triangle = this.pointerTriangle.map((pt) => pt.clone());
+            let animation = () => {
+                alpha -= 0.01;
+                if (alpha < 0) {
+                    this.removeChild(fadingTriangle);
+                    this.ticker.remove(animation);
+                    fadingTriangle.destroy();
+                } else {
+                    fadingTriangle.clear();
+                    fadingTriangle.beginFill(foreFrontColor, alpha);
+                    this.drawTriangle(triangle, fadingTriangle);
+                    fadingTriangle.endFill();
+                }
+            };
+            this.ticker.add(animation);
+        }
     }
 }
 
-TonesPlane.prototype.drawTriangle = function (summits) {
+TonesPlane.prototype.drawTriangle = function (summits, graphics) {
     const s0 = this.grid.cellToWorld(summits[0]);
     const s1 = this.grid.cellToWorld(summits[1]);
     const s2 = this.grid.cellToWorld(summits[2]);
-    this.triangleCursor.clear()
-        .lineStyle(1 / 128, foreFrontColor, 1)
-        .beginFill(0xFFFFFF, 0)
-        .moveTo(s0.get([0, 0]), s0.get([1, 0]))
+    graphics.moveTo(s0.get([0, 0]), s0.get([1, 0]))
         .lineTo(s1.get([0, 0]), s1.get([1, 0]))
         .lineTo(s2.get([0, 0]), s2.get([1, 0]))
         .lineTo(s0.get([0, 0]), s0.get([1, 0]))
-        .closePath()
-        .endFill();
+        .closePath();
 }
 
 TonesPlane.prototype.worldToTransformedFrame = function (worldFrame) {
@@ -254,12 +273,14 @@ TonesPlane.prototype.populate = function () {
             if (!(i in this.toneSprites))
                 this.toneSprites[i] = {};
             this.toneSprites[i][j] = sprite;
-            let plane = this;
-            sprite.on('mouseover', function () {
-                    plane.emit('mouseout');
+            sprite.on('mouseover', () => {
+                    this.emit('mouseout');
                 })
-                .on('mouseout', function () {
-                    plane.emit('mouseover')
+                .on('mouseout', () => {
+                    this.emit('mouseover')
+                })
+                .on('tonetriggered', () => {
+                    this.emit('tonestriggered', [tones.Tone.create(toneEnum, 4)]);
                 });
         }
     }

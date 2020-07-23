@@ -36,6 +36,11 @@ function ToneSprite(toneEnum, resources) {
         .on('mouseout', function () {
             this.hovered = false;
             this.setActive(false);
+        })
+        .on('mousedown', function () {
+            if (this.hovered) {
+                this.emit("tonetriggered");
+            }
         });
     this.pivot.set(pixSize / 2, pixSize / 2);
 }

@@ -37,7 +37,7 @@ function setupApp() {
 }
 
 function setup(loader, resources) {
-    let plane = new TonesPlane(sharpSelection, app.screen, resources);
+    let plane = new TonesPlane(sharpSelection, app.screen, resources, app.ticker);
     plane.position.set(app.screen.width / 2, app.screen.height / 2);
 
     app.stage.addChild(plane);
