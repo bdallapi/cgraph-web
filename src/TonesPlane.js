@@ -16,7 +16,7 @@ function TonesPlane(selection, screen, resources, ticker) {
     this.interactive = true;
     this.grid = Grid.create(math.matrix([
         [0.5, -0.5],
-        [0.5 * math.sqrt(3), 0.5 * math.sqrt(3)]
+        [-0.5 * math.sqrt(3), -0.5 * math.sqrt(3)]
     ]));
     this.localWidth = 7.5;
     this.localScale = 1.0 / 192;
@@ -116,43 +116,43 @@ TonesPlane.prototype.onMouseMove = function (ev) {
         let sextant = math.floor(math.atan2(local.y - cellCoord.get([1, 0]), local.x - cellCoord.get([0, 0])) / math.pi * 3);
         let newTriangle;
         switch (sextant) {
-            case 0:
-                newTriangle = [cell, math.add(cell, math.matrix([
-                    [1],
-                    [-1]
-                ])), math.add(cell, math.matrix([
-                    [1],
-                    [0]
-                ]))];
-                break;
-            case 1:
-                newTriangle = [cell, math.add(cell, math.matrix([
-                    [1],
-                    [0]
-                ])), math.add(cell, math.matrix([
-                    [0],
-                    [1]
-                ]))];
-                break;
-            case 2:
-                newTriangle = [cell, math.add(cell, math.matrix([
-                    [0],
-                    [1]
-                ])), math.add(cell, math.matrix([
-                    [-1],
-                    [1]
-                ]))];
-                break;
             case -1:
                 newTriangle = [cell, math.add(cell, math.matrix([
                     [1],
                     [-1]
                 ])), math.add(cell, math.matrix([
+                    [1],
+                    [0]
+                ]))];
+                break;
+            case -2:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [1],
+                    [0]
+                ])), math.add(cell, math.matrix([
+                    [0],
+                    [1]
+                ]))];
+                break;
+            case -3:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [0],
+                    [1]
+                ])), math.add(cell, math.matrix([
+                    [-1],
+                    [1]
+                ]))];
+                break;
+            case 0:
+                newTriangle = [cell, math.add(cell, math.matrix([
+                    [1],
+                    [-1]
+                ])), math.add(cell, math.matrix([
                     [0],
                     [-1]
                 ]))];
                 break;
-            case -2:
+            case 1:
                 newTriangle = [cell, math.add(cell, math.matrix([
                     [0],
                     [-1]
@@ -161,7 +161,7 @@ TonesPlane.prototype.onMouseMove = function (ev) {
                     [0]
                 ]))];
                 break;
-            case -3:
+            case 2:
                 newTriangle = [cell, math.add(cell, math.matrix([
                     [-1],
                     [0]
