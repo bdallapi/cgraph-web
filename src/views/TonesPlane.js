@@ -6,10 +6,10 @@ import * as math from 'mathjs';
 import ToneSprite from './ToneSprite';
 import {
     foreFrontColor
-} from './constants';
+} from '../constants';
 import {
     tones
-} from './tones';
+} from '../tones';
 
 function TonesPlane(selection, screen, resources, ticker) {
     PIXI.Container.call(this);
@@ -191,7 +191,7 @@ TonesPlane.prototype.onMouseDown = function (ev) {
     if (this.hovered) {
         if (ev.data.button == 0) {
             let triggeredTones = this.pointerTriangle.map(pt => tones.Tone.create(this.selection[this.unitCell.toneValue(pt.get([0, 0]), pt.get([1, 0]))], 4));
-            this.emit('tonestriggered', triggeredTones);
+            this.emit('tonestriggered', triggeredTones, this.pointerTriangle);
             var fadingTriangle = new PIXI.Graphics();
             var alpha = 1;
             this.addChildAt(fadingTriangle, 0);
@@ -280,7 +280,10 @@ TonesPlane.prototype.populate = function () {
                     this.emit('mouseover')
                 })
                 .on('tonetriggered', () => {
-                    this.emit('tonestriggered', [tones.Tone.create(toneEnum, 4)]);
+                    this.emit('singletonetriggered', tones.Tone.create(toneEnum, 4), math.matrix([
+                        [i],
+                        [j]
+                    ]));
                 });
         }
     }

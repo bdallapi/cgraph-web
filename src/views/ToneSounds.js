@@ -6,7 +6,7 @@ import {
     tones,
     sharpSelection,
     flatSelection
-} from './tones'
+} from '../tones'
 
 function loadToneSounds() {
     let conf = {

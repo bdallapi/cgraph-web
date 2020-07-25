@@ -1,6 +1,6 @@
 import {
     HexGrid
-} from '../src/Grid';
+} from '../src/views/Grid';
 import * as math from 'mathjs';
 
 test('integer cell position transforms to itself', () => {

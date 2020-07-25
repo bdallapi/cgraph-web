@@ -1,16 +1,17 @@
 import * as PIXI from 'pixi.js';
 import {
-    sharpSelection,
     tones
 } from './tones';
-import TonesPlane from './TonesPlane';
-import ToneSprite from './ToneSprite';
+import ToneSprite from './views/ToneSprite';
 import {
     loadToneSounds
-} from './ToneSounds';
+} from './views/ToneSounds';
 import {
     foreFrontColor
 } from './constants';
+import Model from './model';
+import View from './view';
+import Controller from './controller';
 
 let app = setupApp();
 let loadingAnimation = loadScreen(app);
@@ -36,41 +37,6 @@ function setupApp() {
     return app;
 }
 
-function setup(loader, resources) {
-    let plane = new TonesPlane(sharpSelection, app.screen, resources, app.ticker);
-    plane.position.set(app.screen.width / 2, app.screen.height / 2);
-
-    app.stage.addChild(plane);
-    app.renderer.render(app.stage);
-
-    function resize() {
-        // Get the p
-        const parent = app.view.parentNode;
-
-        // Resize the renderer
-        app.renderer.resize(parent.clientWidth, parent.clientHeight);
-        plane.resize(app.screen);
-    }
-    window.addEventListener('resize', resize);
-    resize();
-    onSoundLoaded();
-
-    var played = [];
-    plane.on('tonestriggered', (triggeredTones) => {
-        for (let p of played) {
-            toneSounds.fade(1, 0, 50, p);
-        }
-        played = triggeredTones.map(t => toneSounds.play(t.str()));
-    })
-}
-
-function onSoundLoaded() {
-    toneSounds.play(tones.Tone.create(tones.C, 3).str());
-    toneSounds.play(tones.Tone.create(tones.C, 4).str());
-    toneSounds.play(tones.Tone.create(tones.E, 4).str());
-    toneSounds.play(tones.Tone.create(tones.G, 4).str());
-}
-
 function loadScreen(app) {
     let loadingAnimation = new PIXI.Graphics;
     app.stage.addChild(loadingAnimation);
@@ -93,4 +59,22 @@ function loadScreen(app) {
         loadingAnimation.endFill();
     });
     return loadingAnimation;
+}
+
+function setup(loader, resources) {
+    let model = new Model();
+    let view = new View(app, resources, toneSounds);
+    let controller = new Controller(model, view);
+
+    view.tonesPlane.on('tonestriggered', (tones, coords) => controller.onTonesTriggered(tones, coords));
+    view.tonesPlane.on('singletonetriggered', (tone, coord) => controller.onSingleToneTriggered(tone, coord));
+
+    onSoundLoaded();
+}
+
+function onSoundLoaded() {
+    toneSounds.play(tones.Tone.create(tones.C, 3).str());
+    toneSounds.play(tones.Tone.create(tones.C, 4).str());
+    toneSounds.play(tones.Tone.create(tones.E, 4).str());
+    toneSounds.play(tones.Tone.create(tones.G, 4).str());
 }
