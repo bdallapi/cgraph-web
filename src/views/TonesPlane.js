@@ -59,6 +59,10 @@ function TonesPlane(selection, screen, resources, ticker) {
     this.triangleCursor.zIndex = 0;
     this.addChild(this.triangleCursor);
 
+    this.currentChord = new PIXI.Graphics();
+    this.currentChord.zIndex = 0;
+    this.addChildAt(this.currentChord);
+
     this.ticker = ticker;
 
     this.sortChildren();
@@ -303,5 +307,47 @@ TonesPlane.prototype.resize = function (rect) {
         -this.localWidth / 2, -aspect * this.localWidth / 2,
         this.localWidth, aspect * this.localWidth);
 };
+
+TonesPlane.prototype.drawCurrentChord = function (coords) {
+    this.currentChord.clear();
+    const orientation = (p, q, r) => {
+        const val = (q.get([1, 0]) - p.get([1, 0])) * (r.get([0, 0]) - q.get([0, 0])) -
+            (q.get([0, 0]) - p.get([0, 0])) * (r.get([1, 0]) - q.get([1, 0]));
+        return val === 0 ? 0 : ((val > 0) ? 1 : 2);
+    };
+    const jarvis = points => {
+        const hull = [];
+        let leftMost = points.reduce((a, e, i) => {
+            return points[a].get([0, 0]) < points[i].get([0, 0]) ? a : i;
+        }, 0);
+        let q = 0;
+        let p = leftMost;
+
+        do {
+            hull.push(points[p]);
+            q = (p + 1) % points.length;
+
+            for (let i = 0; i < points.length; i++) {
+                const o = orientation(points[p], points[i], points[q]);
+
+                if (o === 2) {
+                    q = i;
+                }
+            }
+
+            p = q;
+        } while (p !== leftMost);
+        return hull;
+    };
+
+    let hull = jarvis(coords);
+    let start = this.grid.cellToWorld(hull[0]);
+    this.currentChord.lineStyle(1 / 128, foreFrontColor, 1).moveTo(start.get([0, 0]), start.get([1, 0]));
+    for (let p of hull.slice(1)) {
+        let point = this.grid.cellToWorld(p);
+        this.currentChord.lineTo(point.get([0, 0]), point.get([1, 0]));
+    }
+    this.currentChord.lineTo(start.get([0, 0]), start.get([1, 0]));
+}
 
 export default TonesPlane;

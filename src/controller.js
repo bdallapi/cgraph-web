@@ -7,9 +7,11 @@ class Controller {
     }
     onTonesTriggered(tones, coords) {
         this.model.tune.setCurrentChord(tones, coords);
+        this.view.tonesPlane.drawCurrentChord(this.model.tune.getCurrent().coords);
     }
     onSingleToneTriggered(tone, coord) {
         this.model.tune.appendToCurrentChord(tone, coord);
+        this.view.tonesPlane.drawCurrentChord(this.model.tune.getCurrent().coords);
     }
 }
 
