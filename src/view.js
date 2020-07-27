@@ -14,18 +14,12 @@ class View {
         this.app.stage.addChild(this.tonesPlane);
         this.app.renderer.render(this.app.stage);
 
-        var played = [];
+        this.playing = [];
         this.tonesPlane.on('tonestriggered', (triggeredTones) => {
-            for (let p of played) {
-                this.toneSounds.fade(1, 0, 50, p);
-            }
-            played = triggeredTones.map(t => this.toneSounds.play(t.str()));
+            this.playTones(triggeredTones);
         });
         this.tonesPlane.on('singletonetriggered', (triggeredTone) => {
-            for (let p of played) {
-                this.toneSounds.fade(1, 0, 50, p);
-            }
-            this.toneSounds.play(triggeredTone.str());
+            this.playTones([triggeredTone]);
         });
 
         let resize = () => {
@@ -38,6 +32,12 @@ class View {
         }
         window.addEventListener('resize', resize);
         resize();
+    }
+    playTones(tones) {
+        for (let p of this.playing) {
+            this.toneSounds.fade(1, 0, 50, p);
+        }
+        this.playing = tones.map(t => this.toneSounds.play(t.str()));
     }
 }
 

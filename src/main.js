@@ -68,6 +68,7 @@ function setup(loader, resources) {
 
     view.tonesPlane.on('tonestriggered', (tones, coords) => controller.onTonesTriggered(tones, coords));
     view.tonesPlane.on('singletonetriggered', (tone, coord) => controller.onSingleToneTriggered(tone, coord));
+    view.tonesPlane.on('currentchordtriggered', () => controller.onCurrentChordTriggered());
 
     onSoundLoaded();
 }

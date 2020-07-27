@@ -61,6 +61,7 @@ function TonesPlane(selection, screen, resources, ticker) {
 
     this.currentChord = new PIXI.Graphics();
     this.currentChord.zIndex = 0;
+    this.currentChord.interactive = true;
     this.addChildAt(this.currentChord);
 
     this.ticker = ticker;
@@ -80,6 +81,19 @@ function TonesPlane(selection, screen, resources, ticker) {
             this.triangleCursor.clear();
         })
         .on('mousedown', this.onMouseDown);
+
+    var currentChordHovered = false;
+    this.currentChord.on('mouseover', () => {
+            currentChordHovered = true;
+            this.emit('mouseout');
+        })
+        .on('mouseout', () => {
+            currentChordHovered = false;
+            this.emit('mouseover');
+        })
+        .on('mousedown', () => {
+            if (currentChordHovered) this.emit('currentchordtriggered');
+        });
 }
 
 TonesPlane.prototype = Object.create(PIXI.Container.prototype);
@@ -348,6 +362,12 @@ TonesPlane.prototype.drawCurrentChord = function (coords) {
         this.currentChord.lineTo(point.get([0, 0]), point.get([1, 0]));
     }
     this.currentChord.lineTo(start.get([0, 0]), start.get([1, 0]));
+    this.currentChord.closePath();
+
+    this.currentChord.hitArea = new PIXI.Polygon(hull.map(e => {
+        let p = this.grid.cellToWorld(e);
+        return new PIXI.Point(p.get([0, 0]), p.get([1, 0]));
+    }));
 }
 
 export default TonesPlane;
