@@ -1,3 +1,4 @@
+import * as math from 'mathjs'
 class Controller {
     constructor(model, view) {
         this.model = model;
@@ -10,7 +11,14 @@ class Controller {
         this.view.tonesPlane.drawCurrentChord(this.model.tune.getCurrent().coords);
     }
     onSingleToneTriggered(tone, coord) {
-        this.model.tune.appendToCurrentChord(tone, coord);
+        let t = this.model.tune.getCurrent().tones.findIndex(e => e.tone == tone.tone);
+        if (t == -1) {
+            this.model.tune.appendToCurrentChord(tone, coord);
+        } else {
+            if (math.equal(this.model.tune.getCurrent().coords[t], coord)) {
+                this.model.tune.removeFromCurrentChord(tone);
+            }
+        }
         this.view.tonesPlane.drawCurrentChord(this.model.tune.getCurrent().coords);
     }
 }
