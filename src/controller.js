@@ -9,6 +9,7 @@ class Controller {
     onTonesTriggered(tones, coords) {
         this.model.tune.setCurrentChord(tones, coords);
         this.view.tonesPlane.drawCurrentChord(this.model.tune.getCurrent().coords);
+        this.onCurrentChordTriggered();
     }
     onSingleToneTriggered(tone, coord) {
         let t = this.model.tune.getCurrent().tones.findIndex(e => e.tone == tone.tone);
@@ -23,6 +24,7 @@ class Controller {
     }
     onCurrentChordTriggered() {
         this.view.playTones(this.model.tune.getCurrent().tones);
+        this.view.tonesPlane.onCurrentChordTriggered();
     }
 }
 

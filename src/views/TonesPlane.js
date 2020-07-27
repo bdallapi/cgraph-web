@@ -63,6 +63,7 @@ function TonesPlane(selection, screen, resources, ticker) {
     this.currentChord.zIndex = 0;
     this.currentChord.interactive = true;
     this.addChildAt(this.currentChord);
+    this.currentChordHull = [];
 
     this.ticker = ticker;
 
@@ -92,7 +93,9 @@ function TonesPlane(selection, screen, resources, ticker) {
             this.emit('mouseover');
         })
         .on('mousedown', () => {
-            if (currentChordHovered) this.emit('currentchordtriggered');
+            if (currentChordHovered) {
+                this.emit('currentchordtriggered');
+            }
         });
 }
 
@@ -200,7 +203,7 @@ TonesPlane.prototype.onMouseMove = function (ev) {
                 this.setSpriteActive(s.get([0, 0]), s.get([1, 0]), true);
             }
             this.triangleCursor.clear().lineStyle(1 / 128, foreFrontColor, 1);
-            this.drawTriangle(this.pointerTriangle, this.triangleCursor);
+            this.drawPolygon(this.pointerTriangle, this.triangleCursor);
         }
     }
 }
@@ -210,37 +213,8 @@ TonesPlane.prototype.onMouseDown = function (ev) {
         if (ev.data.button == 0) {
             let triggeredTones = this.pointerTriangle.map(pt => tones.Tone.create(this.selection[this.unitCell.toneValue(pt.get([0, 0]), pt.get([1, 0]))], 4));
             this.emit('tonestriggered', triggeredTones, this.pointerTriangle);
-            var fadingTriangle = new PIXI.Graphics();
-            var alpha = 1;
-            this.addChildAt(fadingTriangle, 0);
-            var triangle = this.pointerTriangle.map((pt) => pt.clone());
-            let animation = () => {
-                alpha -= 0.01;
-                if (alpha < 0) {
-                    this.removeChild(fadingTriangle);
-                    this.ticker.remove(animation);
-                    fadingTriangle.destroy();
-                } else {
-                    fadingTriangle.clear();
-                    fadingTriangle.beginFill(foreFrontColor, alpha);
-                    this.drawTriangle(triangle, fadingTriangle);
-                    fadingTriangle.endFill();
-                }
-            };
-            this.ticker.add(animation);
         }
     }
-}
-
-TonesPlane.prototype.drawTriangle = function (summits, graphics) {
-    const s0 = this.grid.cellToWorld(summits[0]);
-    const s1 = this.grid.cellToWorld(summits[1]);
-    const s2 = this.grid.cellToWorld(summits[2]);
-    graphics.moveTo(s0.get([0, 0]), s0.get([1, 0]))
-        .lineTo(s1.get([0, 0]), s1.get([1, 0]))
-        .lineTo(s2.get([0, 0]), s2.get([1, 0]))
-        .lineTo(s0.get([0, 0]), s0.get([1, 0]))
-        .closePath();
 }
 
 TonesPlane.prototype.worldToTransformedFrame = function (worldFrame) {
@@ -354,20 +328,45 @@ TonesPlane.prototype.drawCurrentChord = function (coords) {
         return hull;
     };
 
-    let hull = jarvis(coords);
-    let start = this.grid.cellToWorld(hull[0]);
-    this.currentChord.lineStyle(1 / 128, foreFrontColor, 1).moveTo(start.get([0, 0]), start.get([1, 0]));
-    for (let p of hull.slice(1)) {
-        let point = this.grid.cellToWorld(p);
-        this.currentChord.lineTo(point.get([0, 0]), point.get([1, 0]));
-    }
-    this.currentChord.lineTo(start.get([0, 0]), start.get([1, 0]));
-    this.currentChord.closePath();
-
-    this.currentChord.hitArea = new PIXI.Polygon(hull.map(e => {
+    this.currentChordHull = jarvis(coords);
+    this.currentChord.lineStyle(1 / 128, foreFrontColor, 1);
+    this.drawPolygon(this.currentChordHull, this.currentChord);
+    this.currentChord.hitArea = new PIXI.Polygon(this.currentChordHull.map(e => {
         let p = this.grid.cellToWorld(e);
         return new PIXI.Point(p.get([0, 0]), p.get([1, 0]));
     }));
+}
+
+TonesPlane.prototype.drawPolygon = function (poly, graphics) {
+    let start = this.grid.cellToWorld(poly[0]);
+    graphics.moveTo(start.get([0, 0]), start.get([1, 0]))
+    for (let p of poly.slice(1)) {
+        let point = this.grid.cellToWorld(p);
+        graphics.lineTo(point.get([0, 0]), point.get([1, 0]));
+    }
+    graphics.lineTo(start.get([0, 0]), start.get([1, 0]));
+    graphics.closePath();
+}
+
+TonesPlane.prototype.onCurrentChordTriggered = function () {
+    var fading = new PIXI.Graphics();
+    var alpha = 1;
+    this.addChildAt(fading, 0);
+    var hull = this.currentChordHull.map(e => e.clone());
+    let animation = () => {
+        alpha -= 0.01;
+        if (alpha < 0) {
+            this.removeChild(fading);
+            this.ticker.remove(animation);
+            fading.destroy();
+        } else {
+            fading.clear();
+            fading.beginFill(foreFrontColor, alpha);
+            this.drawPolygon(hull, fading);
+            fading.endFill();
+        }
+    };
+    this.ticker.add(animation);
 }
 
 export default TonesPlane;
