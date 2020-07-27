@@ -85,11 +85,17 @@ function TonesPlane(selection, screen, resources, ticker) {
 
     var currentChordHovered = false;
     this.currentChord.on('mouseover', () => {
-            currentChordHovered = true;
             this.emit('mouseout');
+            currentChordHovered = true;
+            for (let s of this.currentChordCoords) {
+                this.setSpriteActive(s.get([0, 0]), s.get([1, 0]), true);
+            }
         })
         .on('mouseout', () => {
             currentChordHovered = false;
+            for (let s of this.currentChordCoords) {
+                this.setSpriteActive(s.get([0, 0]), s.get([1, 0]), false);
+            }
             this.emit('mouseover');
         })
         .on('mousedown', () => {
@@ -296,7 +302,8 @@ TonesPlane.prototype.resize = function (rect) {
         this.localWidth, aspect * this.localWidth);
 };
 
-TonesPlane.prototype.drawCurrentChord = function (coords) {
+TonesPlane.prototype.setCurrentChord = function (coords) {
+    this.currentChordCoords = coords.map(c => c.clone());
     this.currentChord.clear();
     const orientation = (p, q, r) => {
         const val = (q.get([1, 0]) - p.get([1, 0])) * (r.get([0, 0]) - q.get([0, 0])) -
