@@ -15,9 +15,6 @@ class View {
         this.app.renderer.render(this.app.stage);
 
         this.playing = [];
-        this.tonesPlane.on('singletonetriggered', (triggeredTone) => {
-            this.playTones([triggeredTone]);
-        });
 
         let resize = () => {
             // Get the p

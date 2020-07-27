@@ -21,6 +21,7 @@ class Controller {
             }
         }
         this.view.tonesPlane.drawCurrentChord(this.model.tune.getCurrent().coords);
+        this.onCurrentChordTriggered();
     }
     onCurrentChordTriggered() {
         this.view.playTones(this.model.tune.getCurrent().tones);
