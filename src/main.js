@@ -31,7 +31,7 @@ function setupApp() {
         resolution: devicePixelRatio,
         antialias: true
     });
-    document.querySelector("#tonesPlane").appendChild(app.view);
+    document.querySelector("#main").appendChild(app.view);
     const parent = app.view.parentNode;
     app.renderer.resize(parent.clientWidth, parent.clientHeight);
     return app;

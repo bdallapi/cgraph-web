@@ -11,7 +11,7 @@ import {
     tones
 } from '../tones';
 
-function TonesPlane(selection, screen, resources, ticker) {
+function TonesPlane(selection, rect, resources, ticker) {
     PIXI.Container.call(this);
     this.interactive = true;
     this.grid = Grid.create(math.matrix([
@@ -42,14 +42,14 @@ function TonesPlane(selection, screen, resources, ticker) {
             if (i == 2 && j == 3) return 11;
         }
     };
-    const aspect = screen.height / screen.width;
-    this.localFrame = new PIXI.Rectangle(
-        -this.localWidth / 2, -aspect * this.localWidth / 2,
-        this.localWidth, aspect * this.localWidth);
+
+    this.mask = new PIXI.Graphics();
+    this.addChild(this.mask);
+
+    this.resize(rect);
     this.selection = selection;
     this.resources = resources;
 
-    this.resize(screen);
     this.populate();
 
     this.hovered = false;
@@ -291,15 +291,19 @@ TonesPlane.prototype.resize = function (rect) {
     let scale = rect.width / this.localWidth;
     this.scale.set(scale, scale);
 
-    let screenTopLeftInLocal = this.toLocal(new PIXI.Point(rect.x, rect.y));
-    let height = this.scale.y * rect.height;
-    let width = this.scale.x * rect.width;
-    this.hitArea = new PIXI.Rectangle(screenTopLeftInLocal.x, screenTopLeftInLocal.y, width, height);
-
     let aspect = rect.height / rect.width;
     this.localFrame = new PIXI.Rectangle(
         -this.localWidth / 2, -aspect * this.localWidth / 2,
         this.localWidth, aspect * this.localWidth);
+
+    this.position.set(rect.x + rect.width / 2, rect.y + rect.height / 2);
+
+    this.mask.clear();
+    this.mask.beginFill(0xffffff)
+        .drawRect(this.localFrame.x, this.localFrame.y, this.localFrame.width, this.localFrame.height)
+        .endFill();
+
+    this.hitArea = this.localFrame.clone();
 };
 
 TonesPlane.prototype.setCurrentChord = function (coords) {

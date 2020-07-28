@@ -1,15 +1,22 @@
+import * as PIXI from 'pixi.js'
+
 import {
     sharpSelection
 } from './tones';
 
 import TonesPlane from './views/TonesPlane';
 
+import {
+    tonesPlaneWidth
+} from './constants';
+
 class View {
     constructor(pixiapp, resources, toneSounds) {
         this.app = pixiapp;
-        this.tonesPlane = new TonesPlane(sharpSelection, pixiapp.screen, resources, pixiapp.ticker);
+        let planerect = new PIXI.Rectangle(pixiapp.screen.x, pixiapp.screen.y,
+            tonesPlaneWidth * pixiapp.screen.width, pixiapp.screen.height);
+        this.tonesPlane = new TonesPlane(sharpSelection, planerect, resources, pixiapp.ticker);
         this.toneSounds = toneSounds;
-        this.tonesPlane.position.set(this.app.screen.width / 2, this.app.screen.height / 2);
 
         this.app.stage.addChild(this.tonesPlane);
         this.app.renderer.render(this.app.stage);
@@ -22,7 +29,9 @@ class View {
 
             // Resize the renderer
             this.app.renderer.resize(parent.clientWidth, parent.clientHeight);
-            this.tonesPlane.resize(this.app.screen);
+            let planerect = new PIXI.Rectangle(pixiapp.screen.x, pixiapp.screen.y,
+                tonesPlaneWidth * pixiapp.screen.width, pixiapp.screen.height);
+            this.tonesPlane.resize(planerect);
         }
         window.addEventListener('resize', resize);
         resize();
