@@ -161,6 +161,7 @@ TonesPlane.prototype.onMouseMove = function (ev) {
                     [1]
                 ]))];
                 break;
+            case 3:
             case -3:
                 newTriangle = [cell, math.add(cell, math.matrix([
                     [0],
