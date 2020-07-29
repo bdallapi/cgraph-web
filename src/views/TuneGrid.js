@@ -12,7 +12,8 @@ class TuneGrid extends Scrollbox {
             boxWidth: rect.width,
             boxHeight: rect.height,
             fade: true,
-            overflowY: "none"
+            overflowY: "none",
+            overflowX: "hidden"
         });
         this.octaves = 3;
         this.chordsCount = 16;
@@ -47,10 +48,10 @@ class TuneGrid extends Scrollbox {
                 .drawRect(0, (12 * o + 3), this.chordsCount, 1)
                 .endFill()
                 .drawRect(0, (o * 12 + 4), this.chordsCount, 1)
-                .drawRect(0, (o * 12 + 5), this.chordsCount, 1)
                 .beginFill(foreFrontColor, 0.5)
-                .drawRect(0, (12 * o + 6), this.chordsCount, 1)
+                .drawRect(0, (o * 12 + 5), this.chordsCount, 1)
                 .endFill()
+                .drawRect(0, (12 * o + 6), this.chordsCount, 1)
                 .drawRect(0, (o * 12 + 7), this.chordsCount, 1)
                 .beginFill(foreFrontColor, 0.5)
                 .drawRect(0, (12 * o + 8), this.chordsCount, 1)
