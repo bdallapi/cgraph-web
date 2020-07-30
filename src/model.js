@@ -33,6 +33,9 @@ class Tune {
         this.chords[this.current].coords.splice(t, 1);
     }
     setCurrent(index) {
+        while (index >= this.chords.length) {
+            this.chords.push(new Chord);
+        }
         this.current = index;
     }
 }

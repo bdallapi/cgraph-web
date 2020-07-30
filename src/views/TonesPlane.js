@@ -310,6 +310,9 @@ TonesPlane.prototype.resize = function (rect) {
 TonesPlane.prototype.setCurrentChord = function (coords) {
     this.currentChordCoords = coords.map(c => c.clone());
     this.currentChord.clear();
+    if (coords.length == 0) {
+        return;
+    }
     const orientation = (p, q, r) => {
         const val = (q.get([1, 0]) - p.get([1, 0])) * (r.get([0, 0]) - q.get([0, 0])) -
             (q.get([0, 0]) - p.get([0, 0])) * (r.get([1, 0]) - q.get([1, 0]));

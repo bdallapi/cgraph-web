@@ -19,7 +19,7 @@ class View {
         this.tonesPlane = new TonesPlane(sharpSelection, planerect, resources, pixiapp.ticker);
         let tuneRect = new PIXI.Rectangle(pixiapp.screen.x + tonesPlaneWidth * pixiapp.screen.width,
             pixiapp.screen.y, (1 - tonesPlaneWidth) * pixiapp.screen.width, pixiapp.screen.height);
-        this.tuneGrid = new TuneGrid(tuneRect);
+        this.tuneGrid = new TuneGrid(sharpSelection, tuneRect);
         this.toneSounds = toneSounds;
 
         this.app.stage.addChild(this.tonesPlane);

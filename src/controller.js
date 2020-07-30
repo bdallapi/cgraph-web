@@ -9,6 +9,7 @@ class Controller {
     onTonesTriggered(tones, coords) {
         this.model.tune.setCurrentChord(tones, coords);
         this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().coords);
+        this.view.tuneGrid.drawChords(this.model.tune.chords);
         this.onCurrentChordTriggered();
     }
     onSingleToneTriggered(tone, coord) {
@@ -21,11 +22,18 @@ class Controller {
             }
         }
         this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().coords);
+        this.view.tuneGrid.drawChords(this.model.tune.chords);
         this.onCurrentChordTriggered();
     }
     onCurrentChordTriggered() {
         this.view.playTones(this.model.tune.getCurrent().tones);
         this.view.tonesPlane.onCurrentChordTriggered();
+    }
+    onTuneToneTriggered(cid, tone) {
+        this.model.tune.setCurrent(cid);
+        console.log(tone.str() + " was triggered");
+        this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().coords);
+        this.onCurrentChordTriggered();
     }
 }
 
