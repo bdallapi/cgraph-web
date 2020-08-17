@@ -5,6 +5,11 @@ class Controller {
         this.view = view;
 
         this.model.tune.next();
+
+        this.view.tonesPlane.on('tonestriggered', (tones, coords) => this.onTonesTriggered(tones, coords));
+        this.view.tonesPlane.on('singletonetriggered', (tone, coord) => this.onSingleToneTriggered(tone, coord));
+        this.view.tonesPlane.on('currentchordtriggered', () => this.onCurrentChordTriggered());
+        this.view.tuneGrid.on('toneTriggered', (cid, tone) => this.onTuneToneTriggered(cid, tone));
     }
     onTonesTriggered(tones, coords) {
         this.model.tune.setCurrentChord(tones, coords);
@@ -13,13 +18,11 @@ class Controller {
         this.onCurrentChordTriggered();
     }
     onSingleToneTriggered(tone, coord) {
-        let t = this.model.tune.getCurrent().tones.findIndex(e => e.tone == tone.tone);
+        let t = this.model.tune.getCurrent().tones.findIndex(e => e.tone == tone.tone && e.octave == tone.octave);
         if (t == -1) {
             this.model.tune.appendToCurrentChord(tone, coord);
         } else {
-            if (math.equal(this.model.tune.getCurrent().coords[t], coord)) {
-                this.model.tune.removeFromCurrentChord(tone);
-            }
+            this.model.tune.removeFromCurrentChord(tone);
         }
         this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().coords);
         this.view.tuneGrid.drawChords(this.model.tune.chords);
@@ -31,8 +34,11 @@ class Controller {
     }
     onTuneToneTriggered(cid, tone) {
         this.model.tune.setCurrent(cid);
-        console.log(tone.str() + " was triggered");
-        this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().coords);
+        let current = this.model.tune.getCurrent();
+        let barycenter = math.divide(current.coords.reduce((b, c) => math.add(b, c)), current.coords.length);
+        let coord = this.view.tonesPlane.coordFromToneClosestTo(tone, barycenter);
+        this.onSingleToneTriggered(tone, coord);
+        this.view.tonesPlane.setCurrentChord(current.coords);
         this.onCurrentChordTriggered();
     }
 }

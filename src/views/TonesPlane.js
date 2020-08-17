@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import convex_hull from 'convex-hull';
 import {
     Grid
 } from './Grid';
@@ -248,6 +249,15 @@ TonesPlane.prototype.worldToTransformedFrame = function (worldFrame) {
     return new PIXI.Rectangle(min0, min1, max0 - min0 + 1, max1 - min1 + 1);
 };
 
+TonesPlane.prototype.toneFromCell = function (i, j) {
+    let uci = i % this.unitCell.size1;
+    let ucj = j % this.unitCell.size2;
+    if (uci < 0) uci += this.unitCell.size1;
+    if (ucj < 0) ucj += this.unitCell.size2;
+    const val = this.unitCell.toneValue(uci, ucj);
+    return this.selection[val];
+}
+
 TonesPlane.prototype.populate = function () {
     const tf = this.worldToTransformedFrame(this.localFrame);
     this.toneSprites = {};
@@ -313,37 +323,9 @@ TonesPlane.prototype.setCurrentChord = function (coords) {
     if (coords.length == 0) {
         return;
     }
-    const orientation = (p, q, r) => {
-        const val = (q.get([1, 0]) - p.get([1, 0])) * (r.get([0, 0]) - q.get([0, 0])) -
-            (q.get([0, 0]) - p.get([0, 0])) * (r.get([1, 0]) - q.get([1, 0]));
-        return val === 0 ? 0 : ((val > 0) ? 1 : 2);
-    };
-    const jarvis = points => {
-        const hull = [];
-        let leftMost = points.reduce((a, e, i) => {
-            return points[a].get([0, 0]) < points[i].get([0, 0]) ? a : i;
-        }, 0);
-        let q = 0;
-        let p = leftMost;
 
-        do {
-            hull.push(points[p]);
-            q = (p + 1) % points.length;
+    this.currentChordHull = convex_hull(coords.map((c) => [c.get([0, 0]), c.get([1, 0])])).map(h => coords[h[0]]);
 
-            for (let i = 0; i < points.length; i++) {
-                const o = orientation(points[p], points[i], points[q]);
-
-                if (o === 2) {
-                    q = i;
-                }
-            }
-
-            p = q;
-        } while (p !== leftMost);
-        return hull;
-    };
-
-    this.currentChordHull = jarvis(coords);
     this.currentChord.lineStyle(1 / 128, foreFrontColor, 1);
     this.drawPolygon(this.currentChordHull, this.currentChord);
     this.currentChord.hitArea = new PIXI.Polygon(this.currentChordHull.map(e => {
@@ -382,6 +364,42 @@ TonesPlane.prototype.onCurrentChordTriggered = function () {
         }
     };
     this.ticker.add(animation);
+}
+
+TonesPlane.prototype.coordFromToneClosestTo = function (tone, pos) {
+    const closest = Object.keys(this.toneSprites).reduce((min, i) => {
+        const minOverI = Object.keys(this.toneSprites[i]).reduce((min, j) => {
+            if (tone.tone != this.toneFromCell(i, j)) {
+                return min;
+            }
+            const p = this.grid.cellToWorld(math.matrix([
+                [i],
+                [j]
+            ]));
+            const d = math.subtract(p, pos);
+            const val = math.pow(d.get([0, 0]), 2) + math.pow(d.get([1, 0]), 2);
+            min = val < min.val ? {
+                val: val,
+                i: i,
+                j: j
+            } : min;
+            return min;
+        }, {
+            val: 10000,
+            i: i,
+            j: 0
+        });
+        min = minOverI.val < min.val ? minOverI : min;
+        return min;
+    }, {
+        val: 10000,
+        i: 0,
+        j: 0
+    });
+    return math.matrix([
+        [closest.i],
+        [closest.j]
+    ]);
 }
 
 export default TonesPlane;

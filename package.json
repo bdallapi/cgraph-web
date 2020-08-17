@@ -26,6 +26,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
+    "convex-hull": "^1.0.3",
     "express": "^4.17.1",
     "howler": "^2.2.0",
     "mathjs": "^7.0.2",

@@ -62,14 +62,7 @@ function loadScreen(app) {
 }
 
 function setup(loader, resources) {
-    let model = new Model();
-    let view = new View(app, resources, toneSounds);
-    let controller = new Controller(model, view);
-
-    view.tonesPlane.on('tonestriggered', (tones, coords) => controller.onTonesTriggered(tones, coords));
-    view.tonesPlane.on('singletonetriggered', (tone, coord) => controller.onSingleToneTriggered(tone, coord));
-    view.tonesPlane.on('currentchordtriggered', () => controller.onCurrentChordTriggered());
-    view.tuneGrid.on('toneTriggered', (cid, tone) => controller.onTuneToneTriggered(cid, tone));
+    new Controller(new Model(), new View(app, resources, toneSounds));
 
     onSoundLoaded();
 }
