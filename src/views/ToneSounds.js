@@ -10,7 +10,7 @@ import {
 
 function loadToneSounds() {
     let conf = {
-        src: 'assets/tones.webm',
+        src: 'assets/tones.mp3',
         sprite: {}
     };
     let time = 8000;
