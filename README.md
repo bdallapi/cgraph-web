@@ -1,2 +1,2 @@
 # cgraph-web
-A web application to visualizae harmonic progressions
+A web application to visualize harmonic progressions
