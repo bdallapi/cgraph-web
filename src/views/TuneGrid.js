@@ -14,19 +14,16 @@ class TuneGrid extends PIXI.Container {
         this.octaves = 3;
         this.minOctave = 3;
         this.chordsCount = 16;
+        this.topOffset = 2;
         this.graph = new PIXI.Graphics();
         this.addChild(this.graph);
-        const scaleY = rect.height / 12 / this.octave;
-        const scaleX = rect.width / this.chordsCount;
-        this.scale.set(scaleX, scaleY);
-        this.draw();
         this.cursorCell = [-1, -1];
         this.cursor = new PIXI.Graphics();
         this.addChild(this.cursor);
         this.chords = new PIXI.Graphics();
         this.addChild(this.chords);
         this.interactive = true;
-        this.hitArea = new PIXI.Rectangle(0, 0, this.chordsCount, 12 * this.octaves);
+        this.hitArea = new PIXI.Rectangle(0, 0, this.chordsCount, 12 * this.octaves + this.topOffset);
         let hovered = false;
         this.on('mouseover', () => hovered = true)
             .on('mouseout', () => {
@@ -41,6 +38,8 @@ class TuneGrid extends PIXI.Container {
                 if (hovered) this.onMouseDown(ev);
             });
         this.initTones();
+        this.resize(rect);
+        this.draw();
     }
     initTones() {
         this.tones = [];
@@ -52,7 +51,7 @@ class TuneGrid extends PIXI.Container {
     }
     resize(rect) {
         this.position.set(rect.x, rect.y);
-        const scaleY = rect.height / 12 / this.octaves;
+        const scaleY = rect.height / (12 * this.octaves + this.topOffset);
         const scaleX = rect.width / this.chordsCount;
         this.scale.set(scaleX, scaleY);
     }
@@ -67,54 +66,67 @@ class TuneGrid extends PIXI.Container {
                 .beginFill(foreFrontColor, 0.25)
                 .drawRect(cellX, 0, 1, 12 * this.octaves)
                 .endFill()
-                .beginFill(foreFrontColor)
-                .drawRect(cellX, cellY, 1, 1)
-                .endFill()
+                .beginFill(foreFrontColor);
+            if (cellY < this.topOffset) {
+                this.cursor.drawRect(cellX, 0, 1, 2);
+            } else {
+                this.cursor.drawRect(cellX, cellY, 1, 1);
+            }
+            this.cursor.endFill();
         }
     }
     draw() {
         this.graph.clear();
         this.graph.lineStyle(1 / 16, foreFrontColor, 1);
+        this.graph.drawRect(0, 0, this.chordsCount, this.topOffset);
+        this.graph.lineStyle(1 / 8, foreFrontColor, 1);
+        this.graph.moveTo(0, 2).lineTo(this.chordsCount, 2);
+        this.graph.moveTo(0, 0).lineTo(0, this.octaves * 12 + this.topOffset);
+        this.graph.lineStyle(1 / 16, foreFrontColor, 1);
         for (let o = 0; o < 3; ++o) {
-            this.graph.drawRect(0, o * 12, this.chordsCount, 1)
+            this.graph.drawRect(0, o * 12 + this.topOffset, this.chordsCount, 1)
                 .beginFill(foreFrontColor, 0.5)
-                .drawRect(0, (12 * o + 1), this.chordsCount, 1)
+                .drawRect(0, (12 * o + 1) + this.topOffset, this.chordsCount, 1)
                 .endFill()
-                .drawRect(0, (o * 12 + 2), this.chordsCount, 1)
+                .drawRect(0, (o * 12 + 2) + this.topOffset, this.chordsCount, 1)
                 .beginFill(foreFrontColor, 0.5)
-                .drawRect(0, (12 * o + 3), this.chordsCount, 1)
+                .drawRect(0, (12 * o + 3) + this.topOffset, this.chordsCount, 1)
                 .endFill()
-                .drawRect(0, (o * 12 + 4), this.chordsCount, 1)
+                .drawRect(0, (o * 12 + 4) + this.topOffset, this.chordsCount, 1)
                 .beginFill(foreFrontColor, 0.5)
-                .drawRect(0, (o * 12 + 5), this.chordsCount, 1)
+                .drawRect(0, (o * 12 + 5) + this.topOffset, this.chordsCount, 1)
                 .endFill()
-                .drawRect(0, (12 * o + 6), this.chordsCount, 1)
-                .drawRect(0, (o * 12 + 7), this.chordsCount, 1)
+                .drawRect(0, (12 * o + 6) + this.topOffset, this.chordsCount, 1)
+                .drawRect(0, (o * 12 + 7) + this.topOffset, this.chordsCount, 1)
                 .beginFill(foreFrontColor, 0.5)
-                .drawRect(0, (12 * o + 8), this.chordsCount, 1)
+                .drawRect(0, (12 * o + 8) + this.topOffset, this.chordsCount, 1)
                 .endFill()
-                .drawRect(0, (o * 12 + 9), this.chordsCount, 1)
+                .drawRect(0, (o * 12 + 9) + this.topOffset, this.chordsCount, 1)
                 .beginFill(foreFrontColor, 0.5)
-                .drawRect(0, (12 * o + 10), this.chordsCount, 1)
+                .drawRect(0, (12 * o + 10) + this.topOffset, this.chordsCount, 1)
                 .endFill()
-                .drawRect(0, (o * 12 + 11), this.chordsCount, 1);
+                .drawRect(0, (o * 12 + 11) + this.topOffset, this.chordsCount, 1);
         }
         for (let g = 1; g < this.chordsCount; ++g) {
             this.graph.moveTo(g, 0);
-            this.graph.lineTo(g, this.octaves * 12);
+            this.graph.lineTo(g, this.octaves * 12 + this.topOffset);
         }
     }
     onMouseDown(ev) {
         let local = this.toLocal(ev.data.global);
         let cell = [math.floor(local.x), math.floor(local.y)];
-        this.emit('toneTriggered', cell[0], this.tones[cell[1]]);
+        if (cell[1] < this.topOffset) {
+            this.emit('chordTriggered', cell[0]);
+        } else {
+            this.emit('toneTriggered', cell[0], this.tones[cell[1] - this.topOffset]);
+        }
     }
     drawChords(chords) {
         this.chords.clear();
         for (const [index, c] of chords.entries()) {
             for (const t of c.tones) {
                 this.chords.beginFill(foreFrontColor)
-                    .drawRect(index, (this.octaves + this.minOctave - t.octave) * 12 - t.tone.val - 1, 1, 1)
+                    .drawRect(index, (this.octaves + this.minOctave - t.octave) * 12 - t.tone.val - 1 + this.topOffset, 1, 1)
                     .endFill();
             }
         }

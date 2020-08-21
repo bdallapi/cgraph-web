@@ -372,10 +372,10 @@ TonesPlane.prototype.coordFromToneClosestTo = function (tone, pos) {
             if (tone.tone != this.toneFromCell(i, j)) {
                 return min;
             }
-            const p = this.grid.cellToWorld(math.matrix([
+            const p = math.matrix([
                 [i],
                 [j]
-            ]));
+            ]);
             const d = math.subtract(p, pos);
             const val = math.pow(d.get([0, 0]), 2) + math.pow(d.get([1, 0]), 2);
             min = val < min.val ? {
