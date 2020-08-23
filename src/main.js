@@ -19,7 +19,7 @@ app.stage.addChild(loadingAnimation);
 
 var toneSounds = loadToneSounds();
 toneSounds.once('load', () => {
-    PIXI.Loader.shared.add(ToneSprite.asset).load((loader, resources) => {
+    PIXI.Loader.shared.add(ToneSprite.assets).load((loader, resources) => {
         app.stage.removeChild(loadingAnimation);
         setup(loader, resources);
     });
