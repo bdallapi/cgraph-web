@@ -30,6 +30,7 @@ function ToneSprite(toneEnum, resources) {
     this.passiveTex.frame = new PIXI.Rectangle(alt2Col(toneEnum.alt, false) * pixSize, main2Row[toneEnum.main] * pixSize, pixSize, pixSize);
     this.activeTex.frame = new PIXI.Rectangle(alt2Col(toneEnum.alt, true) * pixSize, main2Row[toneEnum.main] * pixSize, pixSize, pixSize);
     this.toneSprite = new PIXI.Sprite(this.passiveTex);
+    this.toneSprite.interactive = true;
     this.addChild(this.toneSprite);
 
     let tokensTex = resources["assets/tokens.png"].texture.clone();
@@ -44,24 +45,47 @@ function ToneSprite(toneEnum, resources) {
         this.tokenSprites[octave] = new PIXI.Sprite(this.tokens[octave]["+"]);
         this.tokenSprites[octave].position.set(shiftx * pixSize, tokenScale * pixSize + (octave - 4) * shifty * pixSize);
         this.tokenSprites[octave].scale.set(tokenScale, tokenScale);
+        this.tokenSprites[octave].interactive = true;
+        this.tokenSprites[octave].visible = false;
+        let tokenHovered = false;
+        this.tokenSprites[octave].on("mouseover", () => {
+                tokenHovered = true;
+            })
+            .on("mouseout", () => {
+                tokenHovered = false;
+            })
+            .on("mousedown", () => {
+                if (tokenHovered) {
+                    this.emit("tonetriggered", octave);
+                }
+            })
         this.addChild(this.tokenSprites[octave]);
     }
-
     this.interactive = true;
-    this.hovered = false;
-    this.on('mouseover', function () {
-            this.hovered = true;
+
+    const showOctaves = (show) => {
+        for (const octave in this.tokenSprites) {
+            this.tokenSprites[octave].visible = show;
+        }
+    }
+
+    this.selected = false;
+    this.toneSpriteHovered = false;
+    this.toneSprite.on("mouseover", () => {
+            this.toneSpriteHovered = true;
             this.setActive(true);
+            showOctaves(true);
         })
-        .on('mouseout', function () {
-            this.hovered = false;
-            this.setActive(false);
+        .on("mouseout", () => {
+            this.toneSpriteHovered = false;
+            this.setActive(this.selected);
+            showOctaves(this.selected);
         })
-        .on('mousedown', function () {
-            if (this.hovered) {
-                this.emit("tonetriggered");
-            }
+        .on("mousedown", () => {
+            this.selected = !this.selected;
+            showOctaves(this.selected);
         });
+
     this.pivot.set(pixSize / 2, pixSize / 2);
 }
 
@@ -70,9 +94,19 @@ ToneSprite.prototype = Object.create(PIXI.Container.prototype);
 ToneSprite.prototype.setActive = function (active) {
     if (active)
         this.toneSprite.texture = this.activeTex;
-    else if (!this.hovered)
+    else if (!this.toneSpriteHovered && !this.selected)
         this.toneSprite.texture = this.passiveTex;
 };
+
+ToneSprite.prototype.setSelectedOctaves = function (octaves) {
+    for (const octave in this.tokenSprites) {
+        if (octave in octaves) {
+            this.tokenSprites.texture = this.tokensTex[octave]["-"];
+        } else {
+            this.tokenSprites.texture = this.tokensTex[octave]["+"];
+        }
+    }
+}
 
 ToneSprite.assets = ["assets/tones.png", "assets/tokens.png"];
 

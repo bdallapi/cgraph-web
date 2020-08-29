@@ -288,8 +288,8 @@ TonesPlane.prototype.populate = function () {
                 .on('mouseout', () => {
                     this.emit('mouseover')
                 })
-                .on('tonetriggered', () => {
-                    this.emit('singletonetriggered', tones.Tone.create(toneEnum, 4), math.matrix([
+                .on('tonetriggered', (octave) => {
+                    this.emit('singletonetriggered', tones.Tone.create(toneEnum, octave), math.matrix([
                         [i],
                         [j]
                     ]));
@@ -317,6 +317,7 @@ TonesPlane.prototype.resize = function (rect) {
     this.hitArea = this.localFrame.clone();
 };
 
+// TODO add setting for tones octaves here
 TonesPlane.prototype.setCurrentChord = function (coords) {
     this.currentChordCoords = coords.map(c => c.clone());
     this.currentChord.clear();
