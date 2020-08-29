@@ -100,10 +100,10 @@ ToneSprite.prototype.setActive = function (active) {
 
 ToneSprite.prototype.setSelectedOctaves = function (octaves) {
     for (const octave in this.tokenSprites) {
-        if (octave in octaves) {
-            this.tokenSprites.texture = this.tokensTex[octave]["-"];
+        if (octaves.findIndex((o) => o == octave) >= 0) {
+            this.tokenSprites[octave].texture = this.tokens[octave]["-"];
         } else {
-            this.tokenSprites.texture = this.tokensTex[octave]["+"];
+            this.tokenSprites[octave].texture = this.tokens[octave]["+"];
         }
     }
 }

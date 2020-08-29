@@ -318,7 +318,7 @@ TonesPlane.prototype.resize = function (rect) {
 };
 
 // TODO add setting for tones octaves here
-TonesPlane.prototype.setCurrentChord = function (coords) {
+TonesPlane.prototype.setCurrentChord = function (tones, coords) {
     this.currentChordCoords = coords.map(c => c.clone());
     this.currentChord.clear();
     if (coords.length == 0) {
@@ -333,6 +333,17 @@ TonesPlane.prototype.setCurrentChord = function (coords) {
         let p = this.grid.cellToWorld(e);
         return new PIXI.Point(p.get([0, 0]), p.get([1, 0]));
     }));
+    for (const i in this.toneSprites) {
+        for (const j in this.toneSprites[i]) {
+            let octaves = [];
+            for (let c = 0; c < coords.length; ++c) {
+                if (coords[c].get([0, 0]) == i && coords[c].get([1, 0]) == j) {
+                    octaves.push(tones[c].octave);
+                }
+            }
+            this.toneSprites[i][j].setSelectedOctaves(octaves);
+        }
+    }
 }
 
 TonesPlane.prototype.drawPolygon = function (poly, graphics) {
