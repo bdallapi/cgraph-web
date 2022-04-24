@@ -357,7 +357,7 @@ TonesPlane.prototype.drawPolygon = function (poly, graphics) {
     graphics.closePath();
 }
 
-TonesPlane.prototype.onCurrentChordTriggered = function () {
+TonesPlane.prototype.triggerChord = function () {
     var fading = new PIXI.Graphics();
     var alpha = 1;
     this.addChildAt(fading, 0);

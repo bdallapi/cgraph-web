@@ -1,53 +1,30 @@
-import * as math from 'mathjs'
 class Controller {
     constructor(model, view) {
         this.model = model;
         this.view = view;
 
-        this.model.tune.next();
-
         this.view.tonesPlane.on('tonestriggered', (tones, coords) => this.onTonesTriggered(tones, coords));
         this.view.tonesPlane.on('singletonetriggered', (tone, coord) => this.onSingleToneTriggered(tone, coord));
-        this.view.tonesPlane.on('currentchordtriggered', () => this.onCurrentChordTriggered());
-        this.view.tuneGrid.on('toneTriggered', (cid, tone) => this.onTuneToneTriggered(cid, tone));
-        this.view.tuneGrid.on('chordTriggered', (cid) => this.onTuneChordTriggered(cid))
+        this.view.tonesPlane.on('currentchordtriggered', (tones, coords) => this.onCurrentTonesTriggered(tones, coords));
     }
     onTonesTriggered(tones, coords) {
-        this.model.tune.setCurrentChord(tones, coords);
-        this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().tones, this.model.tune.getCurrent().coords);
-        this.view.tuneGrid.drawChords(this.model.tune.chords);
-        this.onCurrentChordTriggered();
+        this.model.setChord(tones, coords);
+        this.view.tonesPlane.setCurrentChord(this.model.chord.tones, this.model.chord.coords);
+        this.onCurrentTonesTriggered();
     }
     onSingleToneTriggered(tone, coord) {
-        let t = this.model.tune.getCurrent().tones.findIndex(e => e.tone == tone.tone && e.octave == tone.octave);
+        let t = this.model.chord.tones.findIndex(e => e.tone == tone.tone && e.octave == tone.octave);
         if (t == -1) {
-            this.model.tune.appendToCurrentChord(tone, coord);
+            this.model.appendToCurrentChord(tone, coord);
         } else {
-            this.model.tune.removeFromCurrentChord(tone);
+            this.model.removeFromCurrentChord(tone);
         }
-        this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().tones, this.model.tune.getCurrent().coords);
-        this.view.tuneGrid.drawChords(this.model.tune.chords);
-        this.onCurrentChordTriggered();
+        this.view.tonesPlane.setCurrentChord(this.model.chord.tones, this.model.chord.coords);
+        this.onCurrentTonesTriggered();
     }
-    onCurrentChordTriggered() {
-        if (this.model.tune.getCurrent().tones.length > 0) {
-            this.view.playTones(this.model.tune.getCurrent().tones);
-            this.view.tonesPlane.onCurrentChordTriggered();
-        }
-    }
-    onTuneToneTriggered(cid, tone) {
-        this.model.tune.setCurrent(cid);
-        let current = this.model.tune.getCurrent();
-        let barycenter = math.divide(current.coords.reduce((b, c) => math.add(b, c)), current.coords.length);
-        let coord = this.view.tonesPlane.coordFromToneClosestTo(tone, barycenter);
-        this.onSingleToneTriggered(tone, coord);
-        this.view.tonesPlane.setCurrentChord(current.tones, current.coords);
-        this.onCurrentChordTriggered();
-    }
-    onTuneChordTriggered(cid) {
-        this.model.tune.setCurrent(cid);
-        this.view.tonesPlane.setCurrentChord(this.model.tune.getCurrent().tones, this.model.tune.getCurrent().coords);
-        this.onCurrentChordTriggered();
+    onCurrentTonesTriggered() {
+        this.view.playTones(this.model.chord.tones);
+        this.view.tonesPlane.triggerChord();
     }
 }
 
