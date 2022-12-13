@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "convex-hull": "^1.0.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "howler": "^2.2.0",
     "mathjs": "^7.0.2",
     "pixi-scrollbox": "^2.1.4",
